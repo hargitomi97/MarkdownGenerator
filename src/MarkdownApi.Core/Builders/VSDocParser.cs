@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -96,13 +98,13 @@ namespace igloo15.MarkdownApi.Core.Builders
 
     internal static class VSDocParser
     {
-        public static XmlDocumentComment[] ParseXmlComment(XDocument xDocument)
+        public static XmlDocumentComment[] ParseXmlComment(XDocument xDocument, Dictionary<string, string> myDictionary, HashSet<string> hs, Dictionary<string, string> myDictionary2, HashSet<string> hs2)
         {
-            return ParseXmlComment(xDocument, null);
+            return ParseXmlComment(xDocument, null, myDictionary, hs, myDictionary2, hs2);
         }
 
         // cheap, quick hack parser:)
-        internal static XmlDocumentComment[] ParseXmlComment(XDocument xDocument, string namespaceMatch)
+        internal static XmlDocumentComment[] ParseXmlComment(XDocument xDocument, string namespaceMatch, Dictionary<string, string> myDictionary, HashSet<string> hs, Dictionary<string, string> myDictionary2, HashSet<string> hs2)
         {
             return xDocument.Descendants("member")
                 .Select(x =>
@@ -116,11 +118,16 @@ namespace igloo15.MarkdownApi.Core.Builders
                     var summaryXml = x.Elements("summary").FirstOrDefault()?.ToString()
                         ?? x.Element("summary")?.ToString()
                         ?? "";
-                    summaryXml = Regex.Replace(summaryXml, @"<\/?summary>", string.Empty);
-                    summaryXml = Regex.Replace(summaryXml, @"<para\s*/>", Environment.NewLine);
-                    summaryXml = Regex.Replace(summaryXml, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, namespaceMatch));
+                    //Console.WriteLine(summaryXml);
+                    summaryXml = Regex.Replace(summaryXml, @"<\/?summary>", string.Empty); // a summary tageket üres sztringgel helyettesítjük
+                                                                                           // Console.WriteLine(summaryXml);
+                    summaryXml = Regex.Replace(summaryXml, "<para>", "<br>"); // a para tageket egy új sorral helyettesítjük
+                    summaryXml = Regex.Replace(summaryXml, "</para>", string.Empty); // a vége parákat meg eltüntetjük
+                                                                                     // Console.WriteLine(summaryXml);
+                    summaryXml = Regex.Replace(summaryXml, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, namespaceMatch, myDictionary, hs, myDictionary2, hs2));
 
                     var parsed = Regex.Replace(summaryXml, @"<(type)*paramref name=""([^\""]*)""\s*\/>", e => $"`{e.Groups[1].Value}`");
+                    // Console.WriteLine(parsed);
 
                     var summary = parsed;
 
@@ -128,6 +135,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                     {
                         summary = string.Join("  ", summary.Split(new[] { "\r", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Select(y => y.Trim()));
                     }
+                    // Console.WriteLine(summary);
 
                     var returns = ((string)x.Element("returns")) ?? "";
                     var remarks = ((string)x.Element("remarks")) ?? "";
@@ -215,17 +223,77 @@ namespace igloo15.MarkdownApi.Core.Builders
             return currIndex;
         }
 
-        private static string ResolveSeeElement(Match m, string ns)
+        private static string ResolveSeeElement(Match m, string ns, Dictionary<string, string> myDictionary, HashSet<string> hs, Dictionary<string, string> myDictionary2, HashSet<string> hs2)
         {
             var typeName = m.Groups[1].Value;
-            if (!string.IsNullOrWhiteSpace(ns))
+
+            Assembly assembly = Assembly.LoadFrom(@"C:/Users/Tomi/Desktop/sigstat/src/SigStat.Common/bin/Debug/net461/SigStat.Common.dll");
+
+            foreach (Type type in assembly.GetTypes())
             {
-                if (typeName.StartsWith(ns))
+                if (type.IsClass)
                 {
-                    return $"[{typeName}]({Regex.Replace(typeName, $"\\.(?:.(?!\\.))+$", me => me.Groups[0].Value.Replace(".", "#").ToLower())})";
+                    var asd = type.FullName.Split('.').Last();
+                    var asd2 = type.FullName;
+                    var n = asd.IndexOf('+');
+                    var n2 = asd2.IndexOf('+');
+                    var text = asd.Substring(0, n != -1 ? n : asd.Length);
+                    var text2 = asd2.Substring(0, n2 != -1 ? n2 : asd2.Length);
+
+                   //Console.WriteLine(text2);
+
+                    int numberOfDots = 0;
+                    numberOfDots = text2.Count(t => t == '.');
+                   // Console.WriteLine(numberOfDots);
+
+                    if (numberOfDots.Equals(2))
+                    {
+                        hs.Add(text2.Split('.').Last());
+                        myDictionary = hs.ToDictionary(h => h, h => new Uri("https://github.com/hargitomi97/sigstat/tree/master/docs/md" + "/SigStat/Common/./") + h + ".md");
+                    }
+
+                    else if (numberOfDots.Equals(3))
+                    {
+                        var words = text2.Split('.');
+                        //Console.WriteLine(passed + '/' + full);
+                        hs2.Add(words[words.Length-2]  + '/' + text2.Split('.').Last());
+                        myDictionary2 = hs2.ToDictionary(h2 => h2, h2 => new Uri("https://github.com/hargitomi97/sigstat/tree/master/docs/md" + "/SigStat/Common/./") + h2.Split('.')[h2.Split('.').Length-1] + ".md");
+                        
+                    }
                 }
             }
-            return $"`{typeName}`";
+
+            int fCount = Directory.GetFiles(@"C:\Users\Tomi\Desktop\sigstat\src\SigStat.Common\", "*", SearchOption.AllDirectories).Length;
+
+            //myDictionary.ToList().ForEach(x => myDictionary2[x.Key] = x.Value);
+
+            foreach (KeyValuePair<string, string> pair in myDictionary2) // nincsenek már benne ami kell
+            {
+               //Console.WriteLine(pair.Key + "\t" + pair.Value);
+            }
+
+            var wordsx = typeName.Split('.');
+            var lastPart2 = wordsx[wordsx.Length-2] + '/' + typeName.Split('.').Last(); // 2
+            var lastPart = typeName.Split('.').Last(); // 1
+            //Console.WriteLine(lastPart);
+
+            var foundFirst = myDictionary.FirstOrDefault(t => t.Key == lastPart);
+            string webLink = "";
+
+            if (foundFirst.Equals(new KeyValuePair<string,string>()))
+            {
+                var foundSecond = myDictionary2.FirstOrDefault(t => t.Key == lastPart2);
+                webLink = foundSecond.Value;
+            }
+            else
+            {
+                foundFirst = myDictionary.FirstOrDefault(t => t.Key == lastPart);
+                webLink = foundFirst.Value;
+            }
+
+            Console.WriteLine($"[{typeName}]" + "(" + webLink + ")");
+            return $"[{typeName}]" + "(" + webLink + ")";
+
         }
 
         private class Item1EqualityCompaerer<T1, T2> : EqualityComparer<Tuple<T1, T2>>

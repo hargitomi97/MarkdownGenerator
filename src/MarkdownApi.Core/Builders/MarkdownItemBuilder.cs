@@ -18,7 +18,7 @@ namespace igloo15.MarkdownApi.Core.Builders
     
     internal static class MarkdownItemBuilder
     {
-        public static MarkdownProject Load(string searchArea, string namespaceMatch)
+        public static MarkdownProject Load(string searchArea, string namespaceMatch, Dictionary<string, string> myDictionary, HashSet<string> hs, Dictionary<string, string> myDictionary2, HashSet<string> hs2)
         {
             List<MarkdownType> types = new List<MarkdownType>();
 
@@ -50,7 +50,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                 {
                     if(File.Exists(dllPath) && Path.GetExtension(dllPath) == ".dll")
                     {
-                        LoadDll(dllPath, namespaceMatch);
+                        LoadDll(dllPath, namespaceMatch, myDictionary, hs, myDictionary2, hs2);
                         processedDlls.Add(dllName);
                     }
                     else
@@ -68,10 +68,10 @@ namespace igloo15.MarkdownApi.Core.Builders
             return project;
         }
 
-        private static MarkdownNamespace[] LoadDll(string dllPath, string namespaceMatch)
+        private static MarkdownNamespace[] LoadDll(string dllPath, string namespaceMatch, Dictionary<string, string> myDictionary, HashSet<string> hs, Dictionary<string, string> myDictionary2, HashSet<string> hs2)
         {
             var dllName = Path.GetFileNameWithoutExtension(dllPath);
-            var commentsLookup = GetComments(dllPath, namespaceMatch);
+            var commentsLookup = GetComments(dllPath, namespaceMatch, myDictionary, hs, myDictionary2, hs2);
 
             var namespaceRegex = 
                 !string.IsNullOrEmpty(namespaceMatch) ? new Regex(namespaceMatch) : null;
@@ -176,7 +176,7 @@ namespace igloo15.MarkdownApi.Core.Builders
             return regex.IsMatch(type.Namespace != null ? type.Namespace : string.Empty);
         }
 
-        static ILookup<string, XmlDocumentComment> GetComments(string dllPath, string namespaceMatch)
+        static ILookup<string, XmlDocumentComment> GetComments(string dllPath, string namespaceMatch, Dictionary<string, string> myDictionary, HashSet<string> hs, Dictionary<string, string> myDictionary2, HashSet<string> hs2)
         {
             var dllName = Path.GetFileNameWithoutExtension(dllPath);
             var xmlPath = Path.Combine(Directory.GetParent(dllPath).FullName, dllName + ".xml");
@@ -184,7 +184,7 @@ namespace igloo15.MarkdownApi.Core.Builders
             XmlDocumentComment[] comments = new XmlDocumentComment[0];
             if (File.Exists(xmlPath))
             {
-                comments = VSDocParser.ParseXmlComment(XDocument.Parse(File.ReadAllText(xmlPath)), namespaceMatch);
+                comments = VSDocParser.ParseXmlComment(XDocument.Parse(File.ReadAllText(xmlPath)), namespaceMatch, myDictionary, hs, myDictionary2, hs2);
                 Constants.Logger?.LogDebug("Found {commentCount} comments for {dllName}", comments.Count(), dllName);
             }
             else

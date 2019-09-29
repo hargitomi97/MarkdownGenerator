@@ -2,6 +2,7 @@
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 using igloo15.MarkdownApi.Core.Themes.Default;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 

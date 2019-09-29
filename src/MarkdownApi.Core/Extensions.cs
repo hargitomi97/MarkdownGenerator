@@ -239,7 +239,6 @@ namespace igloo15.MarkdownApi.Core
             return false;
         }
 
-        #region GetTypeParts
 
         public static MarkdownConstructor[] GetConstructors(this MarkdownType mdType)
         {
@@ -350,6 +349,5 @@ namespace igloo15.MarkdownApi.Core
             }
         }
 
-        #endregion GetTypeParts
     }
 }
