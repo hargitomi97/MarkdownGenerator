@@ -228,9 +228,11 @@ namespace igloo15.MarkdownApi.Core.Builders
             var typeName = m.Groups[1].Value;
 
             Assembly assembly = Assembly.LoadFrom(@"C:/Users/Tomi/Desktop/sigstat/src/SigStat.Common/bin/Debug/net461/SigStat.Common.dll");
+            var Fields = "";
 
             foreach (Type type in assembly.GetTypes())
             {
+                
                 if (type.IsClass)
                 {
                     var asd = type.FullName.Split('.').Last();
@@ -240,26 +242,45 @@ namespace igloo15.MarkdownApi.Core.Builders
                     var text = asd.Substring(0, n != -1 ? n : asd.Length);
                     var text2 = asd2.Substring(0, n2 != -1 ? n2 : asd2.Length);
 
-                   //Console.WriteLine(text2);
+                   //Console.WriteLine(type.FullName);
 
                     int numberOfDots = 0;
                     numberOfDots = text2.Count(t => t == '.');
-                   // Console.WriteLine(numberOfDots);
+                    // Console.WriteLine(numberOfDots);
 
+                    
                     if (numberOfDots.Equals(2))
                     {
                         hs.Add(text2.Split('.').Last());
-                        myDictionary = hs.ToDictionary(h => h, h => new Uri("https://github.com/hargitomi97/sigstat/tree/master/docs/md" + "/SigStat/Common/./") + h + ".md");
+                        myDictionary = hs.ToDictionary(h => h, h => new Uri("https://github.com/sigstat/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + h + ".md");
                     }
 
                     else if (numberOfDots.Equals(3))
                     {
                         var words = text2.Split('.');
                         //Console.WriteLine(passed + '/' + full);
-                        hs2.Add(words[words.Length-2]  + '/' + text2.Split('.').Last());
-                        myDictionary2 = hs2.ToDictionary(h2 => h2, h2 => new Uri("https://github.com/hargitomi97/sigstat/tree/master/docs/md" + "/SigStat/Common/./") + h2.Split('.')[h2.Split('.').Length-1] + ".md");
-                        
+                        hs2.Add(words[words.Length - 2] + '/' + text2.Split('.').Last());
+                       
+                        myDictionary2 = hs2.ToDictionary(h2 => h2, h2 => new Uri("https://github.com/sigstat/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + h2.Split('.')[h2.Split('.').Length - 1] + ".md");
+
                     }
+                }
+
+                FieldInfo[] fields = type.GetFields();
+                foreach (var field in fields)
+                {
+                    var part = field.ToString();
+                    part = part.Split(' ').Last();
+                    //Console.WriteLine(part);
+
+                    var part2 = field.FieldType.ToString();
+                    int index = part2.IndexOf("[");
+                    if (index > 0)
+                        part2 = part2.Substring(0, index);
+                    part2 = part2.Split('.').Last();
+                    part2 = Regex.Replace(part2, "`", "-");
+
+                    myDictionary[part] = new Uri("https://github.com/sigstat/sigstat/tree/develop/docs/md" + "/SigStat/Common/./")+ part2 + ".md";
                 }
             }
 
@@ -267,15 +288,18 @@ namespace igloo15.MarkdownApi.Core.Builders
 
             //myDictionary.ToList().ForEach(x => myDictionary2[x.Key] = x.Value);
 
-            foreach (KeyValuePair<string, string> pair in myDictionary2) // nincsenek már benne ami kell
+            foreach (KeyValuePair<string, string> pair in myDictionary) // nincsenek már benne ami kell
             {
-               //Console.WriteLine(pair.Key + "\t" + pair.Value);
+              //Console.WriteLine(pair.Key + "\t" + pair.Value);
             }
+
+            
 
             var wordsx = typeName.Split('.');
             var lastPart2 = wordsx[wordsx.Length-2] + '/' + typeName.Split('.').Last(); // 2
             var lastPart = typeName.Split('.').Last(); // 1
             //Console.WriteLine(lastPart);
+           // myDictionary.Add()
 
             var foundFirst = myDictionary.FirstOrDefault(t => t.Key == lastPart);
             string webLink = "";
@@ -290,8 +314,8 @@ namespace igloo15.MarkdownApi.Core.Builders
                 foundFirst = myDictionary.FirstOrDefault(t => t.Key == lastPart);
                 webLink = foundFirst.Value;
             }
-
-            Console.WriteLine($"[{typeName}]" + "(" + webLink + ")");
+            //Console.WriteLine(typeName);
+           // Console.WriteLine($"[{typeName}]" + "(" + webLink + ")");
             return $"[{typeName}]" + "(" + webLink + ")";
 
         }
