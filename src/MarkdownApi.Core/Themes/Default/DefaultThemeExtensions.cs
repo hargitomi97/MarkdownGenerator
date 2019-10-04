@@ -11,7 +11,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
     internal static class DefaultThemeExtensions
     {
-        
+
         public static void BuildNamespaceLinks(this IMarkdownItem item, string namespaceValue, MarkdownBuilder mb)
         {
             var namespaceItems = namespaceValue.Split('.');
@@ -46,15 +46,26 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
         public static string GetNameOrNameLink(this IMarkdownItem currentType, Type targetType, bool useFullName, bool specialText)
         {
             MarkdownBuilder tempMB = new MarkdownBuilder();
-
+            Console.WriteLine(targetType);
             if (targetType == null)
                 return "";
             if (targetType == typeof(void))
-                return "void";
+                return "[Void]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Void)";
 
-            if (targetType.FullName == null && targetType.Name == null) 
+            if (targetType.FullName == null && targetType.Name == null)
                 return "";
-            
+
+            if (targetType.ToString().Equals("System.Collections.Generic.IEnumerable`1[T]") || targetType.ToString().Equals("System.Collections.Generic.IEnumerable`1[P]"))
+            {
+                return "[IEnumerable]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Collections.Ienumerable)";
+            }
+
+            if (targetType.ToString().Contains("System.Func`3"))
+            {
+                return "[Func]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Func-3)";
+            }
+
+
             string name = targetType.Name;
             string fullName = targetType.ToString();
 
@@ -67,7 +78,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
             var link = currentType.GetLink(new TypeWrapper(targetType));
 
-            if(link != null)
+            if (link != null)
             {
                 tempMB.Link(name, link);
             }
@@ -78,7 +89,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
             if (targetType.IsArray)
                 tempMB.Append("[]");
-            
+
             return tempMB.ToString();
         }
 

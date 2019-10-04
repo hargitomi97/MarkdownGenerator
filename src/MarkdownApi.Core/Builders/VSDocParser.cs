@@ -127,7 +127,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                                                                                      // Console.WriteLine(summaryXml);
                     summaryXml = Regex.Replace(summaryXml, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, namespaceMatch, myDictionary, hs, myDictionary2, hs2));
 
-                    var parsed = Regex.Replace(summaryXml, @"<(type)*paramref name=""([^\""]*)""\s*\/>", e => $"`{e.Groups[1].Value}`");
+                    var parsed = Regex.Replace(summaryXml, @"<(type)*paramref name=""([^\""]*)""\s*\/>", e => $"`{e.Groups[2].Value}`");
                     // Console.WriteLine(parsed);
 
                     var summary = parsed;
@@ -139,6 +139,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                     // Console.WriteLine(summary);
 
                     var returns = ((string)x.Element("returns")) ?? "";
+
                     var remarks = ((string)x.Element("remarks")) ?? "";
 
                     var parameters = x.Elements("param")
@@ -226,7 +227,19 @@ namespace igloo15.MarkdownApi.Core.Builders
 
         private static string ResolveSeeElement(Match m, string ns, Dictionary<string, string> myDictionary, HashSet<string> hs, Dictionary<string, string> myDictionary2, HashSet<string> hs2)
         {
+            var returned = "";
             var typeName = m.Groups[1].Value;
+            if (typeName.Equals("Microsoft.Extensions.Logging.ILogger"))
+            {
+                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/Microsoft.Extensions.Logging.ILogger)";
+                return returned;
+            }
+
+            if (typeName.Equals("System.Drawing.RectangleF"))
+            {
+                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Drawing.RectangleF)";
+                return returned;
+            }
 
             Assembly assembly = Assembly.LoadFrom(@"C:/Users/Tomi/Desktop/sigstat/src/SigStat.Common/bin/Debug/net461/SigStat.Common.dll");
             var Classes = "";
@@ -235,13 +248,14 @@ namespace igloo15.MarkdownApi.Core.Builders
             var Interfaces = "";
             var Generic = "";
             var webLink = "";
+            var Events = "";
+            var Methods = "";
             foreach (Type type in assembly.GetTypes())
             {
                 typeName = m.Groups[1].Value;
                 if (type.IsClass)
                 {
-                    //Console.WriteLine(type);
-                    if (!(type.ToString().Contains("+") && type.ToString().Contains(">")))
+                    if (!(type.ToString().Contains("+") || type.ToString().Contains(">") || type.ToString().Contains("<")))
                     {
                         Classes = type.ToString();
                         myDictionary[Classes] = Classes.Replace(".", "/");
@@ -265,9 +279,10 @@ namespace igloo15.MarkdownApi.Core.Builders
                 }
                 foreach (FieldInfo field in type.GetFields())
                 {
-                    if (!field.Name.Contains("<>"))
+                    if (!(field.Name.Contains("<>") || field.Name.Contains("<>") || field.Name.Contains("Value")))
                     {
                         Fields = field.Name;
+                        //Console.WriteLine(Fields);
                         myDictionary[field.DeclaringType + "." + Fields] = field.DeclaringType.ToString().Replace(".", "/");
                     }
                 }
@@ -276,55 +291,36 @@ namespace igloo15.MarkdownApi.Core.Builders
                     if (!property.Name.Contains("+"))
                     {
                         Properties = property.Name;
-                        //Console.WriteLine(Properties);
+                        //Console.WriteLine(property.DeclaringType);
                         myDictionary[property.DeclaringType + "." + Properties] = property.DeclaringType.ToString().Replace(".", "/");
                     }
                 }
-
-                /*foreach (PropertyInfo property in type.GetProperties())
+                foreach (EventInfo event_ in type.GetEvents())
                 {
-                    var x = property.DeclaringType + " " + property.Name;
-                    //Console.WriteLine(x);
-                   // myDictionary[x] = new Uri("https://github.com/sigstat/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + "teszt"  + ".md";
-                }*/
+                    Events = event_.Name;
+                    myDictionary[event_.DeclaringType + "." + Events] = event_.DeclaringType.ToString().Replace(".", "/");
+                }
+                foreach (MethodInfo method in type.GetMethods())
+                {
+                    Methods = method.Name;
+                    //Console.WriteLine(method.DeclaringType + "." + Methods + " " + method.DeclaringType.ToString().Replace(".", "/"));
+                    myDictionary[method.DeclaringType + "." + Methods] = method.DeclaringType.ToString().Replace(".", "/");
+                }
             }
-
-            /*int fCount = Directory.GetFiles(@"C:\Users\Tomi\Desktop\sigstat\src\SigStat.Common\", "*", SearchOption.AllDirectories).Length;
-
-            //myDictionary.ToList().ForEach(x => myDictionary2[x.Key] = x.Value);*/
 
             foreach (KeyValuePair<string, string> pair in myDictionary) // osztályok benne
             {
                //Console.WriteLine(pair.Key + "\t" + pair.Value);
             }
 
-
-
-            /*var wordsx = typeName.Split('.');
-            var lastPart2 = wordsx[wordsx.Length-2] + '/' + typeName.Split('.').Last(); // 2
-            var lastPart = typeName.Split('.').Last(); // 1
-            //Console.WriteLine(lastPart);
-           // myDictionary.Add()
-
-            var foundFirst = myDictionary.FirstOrDefault(t => t.Key == lastPart);
-            string webLink = "";
-
-            if (foundFirst.Equals(new KeyValuePair<string,string>()))
-            {
-                var foundSecond = myDictionary2.FirstOrDefault(t => t.Key == lastPart2);
-                webLink = foundSecond.Value;
-            }
-            else
-            {
-                foundFirst = myDictionary.FirstOrDefault(t => t.Key == lastPart);
-                webLink = foundFirst.Value;
-            }*/
-
-            //Console.WriteLine(typeName);
+            Console.WriteLine(typeName);
+            int hereIndex = typeName.IndexOf("(");
+            if (hereIndex > 0)
+                typeName = typeName.Substring(0, hereIndex);
             webLink = myDictionary.FirstOrDefault(x => x.Key == typeName).Value;
-            //Console.WriteLine(webLink);
-            //Console.WriteLine($"[{typeName}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)");
-            return $"[{typeName}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)";
+
+            returned = $"[{typeName}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)";
+            return returned;
         }
 
         private class Item1EqualityCompaerer<T1, T2> : EqualityComparer<Tuple<T1, T2>>
