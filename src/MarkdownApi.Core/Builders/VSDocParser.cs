@@ -1,4 +1,5 @@
-﻿using System;
+﻿using igloo15.MarkdownApi.Core.Themes.Default;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -228,74 +229,78 @@ namespace igloo15.MarkdownApi.Core.Builders
             var typeName = m.Groups[1].Value;
 
             Assembly assembly = Assembly.LoadFrom(@"C:/Users/Tomi/Desktop/sigstat/src/SigStat.Common/bin/Debug/net461/SigStat.Common.dll");
+            var Classes = "";
             var Fields = "";
-
+            var Properties = "";
+            var Interfaces = "";
+            var Generic = "";
+            var webLink = "";
             foreach (Type type in assembly.GetTypes())
             {
-                
+                typeName = m.Groups[1].Value;
                 if (type.IsClass)
                 {
-                    var asd = type.FullName.Split('.').Last();
-                    var asd2 = type.FullName;
-                    var n = asd.IndexOf('+');
-                    var n2 = asd2.IndexOf('+');
-                    var text = asd.Substring(0, n != -1 ? n : asd.Length);
-                    var text2 = asd2.Substring(0, n2 != -1 ? n2 : asd2.Length);
-
-                   //Console.WriteLine(type.FullName);
-
-                    int numberOfDots = 0;
-                    numberOfDots = text2.Count(t => t == '.');
-                    // Console.WriteLine(numberOfDots);
-
-                    
-                    if (numberOfDots.Equals(2))
+                    //Console.WriteLine(type);
+                    if (!(type.ToString().Contains("+") && type.ToString().Contains(">")))
                     {
-                        hs.Add(text2.Split('.').Last());
-                        myDictionary = hs.ToDictionary(h => h, h => new Uri("https://github.com/hargitomi97/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + h + ".md");
-                    }
-
-                    else if (numberOfDots.Equals(3))
-                    {
-                        var words = text2.Split('.');
-                        //Console.WriteLine(passed + '/' + full);
-                        hs2.Add(words[words.Length - 2] + '/' + text2.Split('.').Last());
-                       
-                        myDictionary2 = hs2.ToDictionary(h2 => h2, h2 => new Uri("https://github.com/hargitomi97/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + h2.Split('.')[h2.Split('.').Length - 1] + ".md");
-
+                        Classes = type.ToString();
+                        myDictionary[Classes] = Classes.Replace(".", "/");
                     }
                 }
-
-                FieldInfo[] fields = type.GetFields();
-                foreach (var field in fields)
+                if (type.IsInterface)
                 {
-                    var part = field.ToString();
-                    part = part.Split(' ').Last();
-                    //Console.WriteLine(part);
-
-                    var part2 = field.FieldType.ToString();
-                    int index = part2.IndexOf("[");
-                    if (index > 0)
-                        part2 = part2.Substring(0, index);
-                    part2 = part2.Split('.').Last();
-                    part2 = Regex.Replace(part2, "`", "-");
-
-                    myDictionary[part] = new Uri("https://github.com/sigstat/sigstat/tree/develop/docs/md" + "/SigStat/Common/./")+ part2 + ".md";
+                    Interfaces = type.ToString();
+                    myDictionary[Interfaces] = Interfaces.Replace(".", "/");
                 }
+                if (type.ToString().Contains("`1") && !type.ToString().Contains("<>") && !type.ToString().Contains("+"))
+                {
+                    //Console.WriteLine(type);
+                    Generic = type.ToString();
+                    int index = Generic.IndexOf("[");
+                    if (index > 0)
+                        Generic = Generic.Substring(0, index);
+                    //Console.WriteLine(Generic);
+
+                    myDictionary[Generic] = Generic.Replace(".", "/").Replace('`', '-');
+                }
+                foreach (FieldInfo field in type.GetFields())
+                {
+                    if (!field.Name.Contains("<>"))
+                    {
+                        Fields = field.Name;
+                        myDictionary[field.DeclaringType + "." + Fields] = field.DeclaringType.ToString().Replace(".", "/");
+                    }
+                }
+                foreach (PropertyInfo property in type.GetProperties())
+                {
+                    if (!property.Name.Contains("+"))
+                    {
+                        Properties = property.Name;
+                        //Console.WriteLine(Properties);
+                        myDictionary[property.DeclaringType + "." + Properties] = property.DeclaringType.ToString().Replace(".", "/");
+                    }
+                }
+
+                /*foreach (PropertyInfo property in type.GetProperties())
+                {
+                    var x = property.DeclaringType + " " + property.Name;
+                    //Console.WriteLine(x);
+                   // myDictionary[x] = new Uri("https://github.com/sigstat/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + "teszt"  + ".md";
+                }*/
             }
 
-            int fCount = Directory.GetFiles(@"C:\Users\Tomi\Desktop\sigstat\src\SigStat.Common\", "*", SearchOption.AllDirectories).Length;
+            /*int fCount = Directory.GetFiles(@"C:\Users\Tomi\Desktop\sigstat\src\SigStat.Common\", "*", SearchOption.AllDirectories).Length;
 
-            //myDictionary.ToList().ForEach(x => myDictionary2[x.Key] = x.Value);
+            //myDictionary.ToList().ForEach(x => myDictionary2[x.Key] = x.Value);*/
 
-            foreach (KeyValuePair<string, string> pair in myDictionary) // nincsenek már benne ami kell
+            foreach (KeyValuePair<string, string> pair in myDictionary) // osztályok benne
             {
-              //Console.WriteLine(pair.Key + "\t" + pair.Value);
+               //Console.WriteLine(pair.Key + "\t" + pair.Value);
             }
 
-            
 
-            var wordsx = typeName.Split('.');
+
+            /*var wordsx = typeName.Split('.');
             var lastPart2 = wordsx[wordsx.Length-2] + '/' + typeName.Split('.').Last(); // 2
             var lastPart = typeName.Split('.').Last(); // 1
             //Console.WriteLine(lastPart);
@@ -313,11 +318,13 @@ namespace igloo15.MarkdownApi.Core.Builders
             {
                 foundFirst = myDictionary.FirstOrDefault(t => t.Key == lastPart);
                 webLink = foundFirst.Value;
-            }
-            //Console.WriteLine(typeName);
-            Console.WriteLine($"[{typeName}]" + "(" + webLink + ")");
-            return $"[{typeName}]" + "(" + webLink + ")";
+            }*/
 
+            //Console.WriteLine(typeName);
+            webLink = myDictionary.FirstOrDefault(x => x.Key == typeName).Value;
+            //Console.WriteLine(webLink);
+            //Console.WriteLine($"[{typeName}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)");
+            return $"[{typeName}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)";
         }
 
         private class Item1EqualityCompaerer<T1, T2> : EqualityComparer<Tuple<T1, T2>>

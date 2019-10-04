@@ -90,7 +90,6 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
             }
             else if (info.FullName.StartsWith("System") || info.FullName.StartsWith("Microsoft"))
             {
-
                 return "https://docs.microsoft.com/en-us/dotnet/api/" + Cleaner.CleanName(info.FullName, true, false);
             }
             return null;
