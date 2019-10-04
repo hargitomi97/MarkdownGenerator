@@ -252,7 +252,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                     if (numberOfDots.Equals(2))
                     {
                         hs.Add(text2.Split('.').Last());
-                        myDictionary = hs.ToDictionary(h => h, h => new Uri("https://github.com/sigstat/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + h + ".md");
+                        myDictionary = hs.ToDictionary(h => h, h => new Uri("https://github.com/hargitomi97/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + h + ".md");
                     }
 
                     else if (numberOfDots.Equals(3))
@@ -261,7 +261,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                         //Console.WriteLine(passed + '/' + full);
                         hs2.Add(words[words.Length - 2] + '/' + text2.Split('.').Last());
                        
-                        myDictionary2 = hs2.ToDictionary(h2 => h2, h2 => new Uri("https://github.com/sigstat/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + h2.Split('.')[h2.Split('.').Length - 1] + ".md");
+                        myDictionary2 = hs2.ToDictionary(h2 => h2, h2 => new Uri("https://github.com/hargitomi97/sigstat/tree/develop/docs/md" + "/SigStat/Common/./") + h2.Split('.')[h2.Split('.').Length - 1] + ".md");
 
                     }
                 }
@@ -315,7 +315,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                 webLink = foundFirst.Value;
             }
             //Console.WriteLine(typeName);
-           // Console.WriteLine($"[{typeName}]" + "(" + webLink + ")");
+            Console.WriteLine($"[{typeName}]" + "(" + webLink + ")");
             return $"[{typeName}]" + "(" + webLink + ")";
 
         }

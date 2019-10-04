@@ -65,7 +65,7 @@ namespace igloo15.MarkdownApi.Tester
                 ShowParameterNames = true,
             }
                 ),
-                @"..\..\..\..\..\sigstat\docs\md"
+                @"..\..\..\..\..\SajatSigStat\docs\md"
             );
 
             AppDomain.CurrentDomain.ProcessExit += (e, s) =>
