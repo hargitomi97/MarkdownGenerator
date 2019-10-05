@@ -46,7 +46,6 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
         public static string GetNameOrNameLink(this IMarkdownItem currentType, Type targetType, bool useFullName, bool specialText)
         {
             MarkdownBuilder tempMB = new MarkdownBuilder();
-            Console.WriteLine(targetType);
             if (targetType == null)
                 return "";
             if (targetType == typeof(void))

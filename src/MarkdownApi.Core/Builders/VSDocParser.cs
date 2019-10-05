@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -228,18 +229,7 @@ namespace igloo15.MarkdownApi.Core.Builders
         private static string ResolveSeeElement(Match m, string ns, Dictionary<string, string> myDictionary, HashSet<string> hs, Dictionary<string, string> myDictionary2, HashSet<string> hs2)
         {
             var returned = "";
-            var typeName = m.Groups[1].Value;
-            if (typeName.Equals("Microsoft.Extensions.Logging.ILogger"))
-            {
-                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/Microsoft.Extensions.Logging.ILogger)";
-                return returned;
-            }
-
-            if (typeName.Equals("System.Drawing.RectangleF"))
-            {
-                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Drawing.RectangleF)";
-                return returned;
-            }
+            
 
             Assembly assembly = Assembly.LoadFrom(@"C:/Users/Tomi/Desktop/sigstat/src/SigStat.Common/bin/Debug/net461/SigStat.Common.dll");
             var Classes = "";
@@ -252,74 +242,132 @@ namespace igloo15.MarkdownApi.Core.Builders
             var Methods = "";
             foreach (Type type in assembly.GetTypes())
             {
-                typeName = m.Groups[1].Value;
                 if (type.IsClass)
                 {
                     if (!(type.ToString().Contains("+") || type.ToString().Contains(">") || type.ToString().Contains("<")))
                     {
                         Classes = type.ToString();
-                        myDictionary[Classes] = Classes.Replace(".", "/");
+                        int index = Classes.IndexOf("[");
+                        if (index > 0)
+                            Classes = Classes.Substring(0, index);
+                        //Console.WriteLine(Classes.Substring(Classes.IndexOf('.') + 1).Substring(Classes.IndexOf('.')).Replace('`', '-') + " " + Classes.Replace(".", "/"));
+                        myDictionary[Classes.Substring(Classes.IndexOf('.') + 1).Substring(Classes.IndexOf('.')).Replace('`', '-')] = Classes.Replace(".", "/");
                     }
                 }
                 if (type.IsInterface)
                 {
+                    var cc = "";
                     Interfaces = type.ToString();
-                    myDictionary[Interfaces] = Interfaces.Replace(".", "/");
+                    cc = type.ToString();
+                    if (cc.Contains('.'))
+                    {
+                        cc = cc.Substring(cc.IndexOf('.') + 1);
+                    }
+                    if (cc.Contains('.'))
+                    {
+                        cc = cc.Substring(cc.IndexOf('.') + 1);
+                    }
+                    myDictionary[cc] = Interfaces.Replace(".", "/");
                 }
                 if (type.ToString().Contains("`1") && !type.ToString().Contains("<>") && !type.ToString().Contains("+"))
                 {
-                    //Console.WriteLine(type);
                     Generic = type.ToString();
                     int index = Generic.IndexOf("[");
                     if (index > 0)
                         Generic = Generic.Substring(0, index);
-                    //Console.WriteLine(Generic);
 
                     myDictionary[Generic] = Generic.Replace(".", "/").Replace('`', '-');
                 }
                 foreach (FieldInfo field in type.GetFields())
                 {
-                    if (!(field.Name.Contains("<>") || field.Name.Contains("<>") || field.Name.Contains("Value")))
+                    if (!field.Name.Contains("<>") && !field.Name.Contains("<>") && !field.Name.Contains("Value") && !field.Name.Contains("+"))
                     {
                         Fields = field.Name;
-                        //Console.WriteLine(Fields);
-                        myDictionary[field.DeclaringType + "." + Fields] = field.DeclaringType.ToString().Replace(".", "/");
+                        //Console.WriteLine(field.DeclaringType.ToString().Split('.').Last() + "." + Fields + " " + field.DeclaringType.ToString().Replace(".", "/"));
+                        myDictionary[field.DeclaringType.ToString().Split('.').Last() + "." + Fields] = field.DeclaringType.ToString().Replace(".", "/");
                     }
                 }
                 foreach (PropertyInfo property in type.GetProperties())
                 {
                     if (!property.Name.Contains("+"))
                     {
+                        var xx = "";
                         Properties = property.Name;
-                        //Console.WriteLine(property.DeclaringType);
-                        myDictionary[property.DeclaringType + "." + Properties] = property.DeclaringType.ToString().Replace(".", "/");
+                        xx = property.DeclaringType.ToString();
+                        xx = xx.Substring(xx.IndexOf('.') + 1);
+                        if(xx.Contains('.'))
+                        {
+                            xx = xx.Substring(xx.IndexOf('.') + 1);
+                        }
+                        //Console.WriteLine(xx);
+                        //Console.WriteLine(xx +  "." + Properties + " " + property.DeclaringType.ToString().Replace(".", "/"));
+                        myDictionary[xx + "." + Properties] = property.DeclaringType.ToString().Replace(".", "/");
                     }
                 }
                 foreach (EventInfo event_ in type.GetEvents())
                 {
+                    var zz = "";
                     Events = event_.Name;
-                    myDictionary[event_.DeclaringType + "." + Events] = event_.DeclaringType.ToString().Replace(".", "/");
+                    zz = event_.DeclaringType.ToString();
+                    zz = zz.Substring(zz.IndexOf('.') + 1);
+                    if (zz.Contains('.'))
+                    {
+                        zz = zz.Substring(zz.IndexOf('.') + 1);
+                    }
+                    myDictionary[zz + "." + Events] = event_.DeclaringType.ToString().Replace(".", "/");
                 }
                 foreach (MethodInfo method in type.GetMethods())
                 {
+                    var yy = "";
                     Methods = method.Name;
-                    //Console.WriteLine(method.DeclaringType + "." + Methods + " " + method.DeclaringType.ToString().Replace(".", "/"));
-                    myDictionary[method.DeclaringType + "." + Methods] = method.DeclaringType.ToString().Replace(".", "/");
+                    yy = method.DeclaringType.ToString();
+                    yy = yy.Substring(yy.IndexOf('.') + 1);
+                    if (yy.Contains('.'))
+                    {
+                        yy = yy.Substring(yy.IndexOf('.') + 1);
+                    }
+                    //Console.WriteLine(yy + "." + Methods + " " + method.DeclaringType.ToString().Replace(".", "/"));
+                    myDictionary[yy + "." + Methods] = method.DeclaringType.ToString().Replace(".", "/");
                 }
             }
 
             foreach (KeyValuePair<string, string> pair in myDictionary) // osztályok benne
             {
-               //Console.WriteLine(pair.Key + "\t" + pair.Value);
+                //Console.WriteLine(pair.Key + "\t" + pair.Value);
+            }
+            var typeName = m.Groups[1].Value;
+            if (typeName.Equals("Microsoft.Extensions.Logging.ILogger"))
+            {
+                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/Microsoft.Extensions.Logging.ILogger)";
+                return returned;
             }
 
-            Console.WriteLine(typeName);
+            if (typeName.Equals("System.Drawing.RectangleF"))
+            {
+                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Drawing.RectangleF)";
+                return returned;
+            }
+            if (typeName.Equals("System.Collections.Generic.KeyNotFoundException"))
+            {
+                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Collections.Generic.KeyNotFoundException)";
+                return returned;
+            }
+            typeName = typeName.Substring(typeName.IndexOf('.') + 1);
+            typeName = typeName.Substring(typeName.IndexOf('.') + 1);
+            typeName = typeName.Replace("`", "-");
+            //special case for HSCP
             int hereIndex = typeName.IndexOf("(");
             if (hereIndex > 0)
                 typeName = typeName.Substring(0, hereIndex);
+            //Console.WriteLine(typeName);
             webLink = myDictionary.FirstOrDefault(x => x.Key == typeName).Value;
-
+            //Console.WriteLine(webLink);
+            if (webLink != null && webLink.Contains("`"))
+            {
+                webLink = webLink.Replace('`', '-');
+            }
             returned = $"[{typeName}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)";
+            Console.WriteLine(returned);
             return returned;
         }
 
