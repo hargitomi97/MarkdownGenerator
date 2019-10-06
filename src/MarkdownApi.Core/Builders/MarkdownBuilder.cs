@@ -8,7 +8,7 @@ namespace igloo15.MarkdownApi.Core.Builders
     /// </summary>
     public class MarkdownBuilder
     {
-        
+
         /// <summary>
         /// Places code in a markdown codeblock
         /// </summary>
@@ -44,7 +44,7 @@ namespace igloo15.MarkdownApi.Core.Builders
 
             return this;
         }
-        
+
         /// <summary>
         /// Appends a new line to the internal string builder
         /// </summary>
@@ -94,7 +94,7 @@ namespace igloo15.MarkdownApi.Core.Builders
         /// <returns>The MarkdownBuilder</returns>
         public MarkdownBuilder HeaderWithCode(int level, string code)
         {
-            
+
 
             for (int i = 0; i < level; i++)
             {
@@ -216,13 +216,24 @@ namespace igloo15.MarkdownApi.Core.Builders
 
             foreach (var item in items)
             {
+                bool changing = false;
                 sb.Append("| ");
                 foreach (var item2 in item)
                 {
-                    sb.Append(item2);
-                    sb.Append(" | ");
+                    if (!changing)
+                    {
+                        sb.Append(item2 + "<img width=200/>");
+                        changing = true;
+                    }
+                    else
+                    {
+                        sb.Append(item2);
+                        changing = false;
+                    }
+                    sb.Append("| ");
                 }
-                sb.AppendLine();
+
+                sb.AppendLine("<br>");
             }
             sb.AppendLine();
 

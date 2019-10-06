@@ -59,10 +59,11 @@ namespace igloo15.MarkdownApi.Tester
             {
                 BuildNamespacePages = true,
                 BuildTypePages = true,
+                BuildMethodPages = true,
                 RootFileName = "README.md",
                 RootTitle = "API",
                 RootSummary = "The Root Page Summary",
-                ShowParameterNames = true,
+                ShowParameterNames = false,
             }
                 ),
                 @"..\..\..\..\..\SajatSigStat\docs\md"

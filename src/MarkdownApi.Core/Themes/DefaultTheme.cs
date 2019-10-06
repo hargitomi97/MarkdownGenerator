@@ -17,6 +17,7 @@ namespace igloo15.MarkdownApi.Core.Themes
         private DefaultNamespaceBuilder _namespaceBuilder;
         private DefaultProjectBuilder _projectBuilder;
         private DefaultTypeBuilder _typeBuilder;
+        private DefaultMethodBuilder _methodBuilder;
         internal static ILogger ThemeLogger;
 
         /// <summary>
@@ -30,6 +31,7 @@ namespace igloo15.MarkdownApi.Core.Themes
             _namespaceBuilder = new DefaultNamespaceBuilder(_options);
             _projectBuilder = new DefaultProjectBuilder(_options);
             _typeBuilder = new DefaultTypeBuilder(_options);
+            _methodBuilder = new DefaultMethodBuilder(_options);
         }
 
         /// <summary>
@@ -125,7 +127,9 @@ namespace igloo15.MarkdownApi.Core.Themes
         /// <returns>An empty string</returns>
         public string BuildPage(MarkdownMethod item)
         {
-            return "";
+            if (!_options.BuildMethodPages)
+                return "";
+            return _methodBuilder.BuildPage(item);
         }
 
         /// <summary>

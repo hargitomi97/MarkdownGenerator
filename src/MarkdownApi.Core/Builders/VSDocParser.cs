@@ -367,7 +367,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                 webLink = webLink.Replace('`', '-');
             }
             returned = $"[{typeName}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)";
-            Console.WriteLine(returned);
+            //Console.WriteLine(returned);
             return returned;
         }
 

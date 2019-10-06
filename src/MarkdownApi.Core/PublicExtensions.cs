@@ -22,7 +22,6 @@ namespace igloo15.MarkdownApi.Core
         {
             if (dest.FileName == null)
                 return "";
-
             return from.Location.AddRoot().UpdatedRelativePath(dest.Location.AddRoot()).CombinePath(dest.FileName).AddRoot();
         }
     }

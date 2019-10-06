@@ -64,7 +64,6 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                 return "[Func]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Func-3)";
             }
 
-
             string name = targetType.Name;
             string fullName = targetType.ToString();
 
