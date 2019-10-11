@@ -33,7 +33,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
         /// <returns>The markdown content</returns>
         public string BuildPage(MarkdownMethod item)
         {
-            var typeZeroHeaders = new[] {"Return", "Name", "Summary" };
+            var typeZeroHeaders = new[] {"Return", "Name"};
 
             MarkdownBuilder mb = new MarkdownBuilder();
             mb.HeaderWithLink(1, item.FullName, item.To(item));
@@ -44,17 +44,14 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
             // mb.AppendLine("| ------| -----------:|");
             //mb.AppendLine("| " + name + " | "+ item.Summary);
             mb.AppendLine(item.Summary);
-            mb.AppendLine("Return type:");
 
-            BuildTable(mb, "Methods", item, typeZeroHeaders, item);
+            BuildTable(mb, item, typeZeroHeaders, item);
 
             return mb.ToString();
         }
 
-        private void BuildTable(MarkdownBuilder mb, string label, IMarkdownItem item, string[] headers, MarkdownMethod mdType)
+        private void BuildTable(MarkdownBuilder mb, IMarkdownItem item, string[] headers, MarkdownMethod mdType)
         {
-
-            mb.Header(2, label);
             mb.AppendLine();
 
             List<string[]> data = new List<string[]>();
@@ -71,7 +68,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
             string name = item.FullName;
             if (item.ItemType == MarkdownItemTypes.Method)
             {
-                name = Cleaner.CreateFullMethodWithLinks(mdType, item.As<MarkdownMethod>(), false, _options.ShowParameterNames);
+                name = Cleaner.CreateFullMethodWithLinks(mdType, item.As<MarkdownMethod>(), false, true);
             }
             else if (item.ItemType == MarkdownItemTypes.Property)
             {
@@ -85,11 +82,8 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
             dataValues[1] = "<sub>" + name + "</sub>";
 
-            if(headers.Length > 2)
-            dataValues[2] = "<sub>" + item.Summary + "</sub>";
-
             data.Add(dataValues);
-            mb.Table(headers, data);
+            mb.TableMethod(headers, data);
             mb.AppendLine();
         }
     }

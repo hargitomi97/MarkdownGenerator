@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,11 +62,11 @@ namespace igloo15.MarkdownApi.Tester
                 BuildMethodPages = true,
                 RootFileName = "README.md",
                 RootTitle = "API",
-                RootSummary = "The Root Page Summary",
+                RootSummary = "",
                 ShowParameterNames = false,
             }
                 ),
-                @"..\..\..\..\..\SajatSigStat\docs\md"
+                @"..\..\..\..\..\sigstat\docs\md"
             );
 
             AppDomain.CurrentDomain.ProcessExit += (e, s) =>
