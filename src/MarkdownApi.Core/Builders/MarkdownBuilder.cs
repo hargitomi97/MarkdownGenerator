@@ -222,7 +222,7 @@ namespace igloo15.MarkdownApi.Core.Builders
         {
           if (!changing)
           {
-            sb.Append(item2 + "<img width=200/>");
+            sb.Append(item2 + "<!--aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-->");
             changing = true;
           }
           else

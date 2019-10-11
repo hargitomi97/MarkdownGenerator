@@ -231,7 +231,7 @@ namespace igloo15.MarkdownApi.Core.Builders
       var returned = "";
 
 
-      Assembly assembly = Assembly.LoadFrom(@"C:/Users/Tom/Desktop/sigstat/src/SigStat.Common/bin/Debug/net461/SigStat.Common.dll");
+      Assembly assembly = Assembly.LoadFrom(@"C:/Users/Tomi/Desktop/sigstat/src/SigStat.Common/bin/Debug/net461/SigStat.Common.dll");
       var Classes = "";
       var Fields = "";
       var Properties = "";
@@ -368,7 +368,7 @@ namespace igloo15.MarkdownApi.Core.Builders
       {
         webLink = webLink.Replace('`', '-');
       }
-      returned = $"[{typeName}]" + "(https://github.com/sigstat/sigstat/blob/develop/docs/md/" + webLink + ".md)";
+      returned = $"[{typeName.Split('.').Last()}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)";
       //Console.WriteLine(returned);
       return returned;
     }
