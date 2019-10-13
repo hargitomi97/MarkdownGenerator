@@ -22,6 +22,7 @@ namespace igloo15.MarkdownApi.Core.Builders
 
                 var typeComments = comments[type.FullName];
 
+
                 if (!type.InternalType.IsEnum)
                 {
                     var builtType = BuildType(type, myNamespace, typeComments);
@@ -49,7 +50,7 @@ namespace igloo15.MarkdownApi.Core.Builders
             type.NamespaceItem = namespaceItem;
 
             type.Summary = comments.FirstOrDefault(x => x.MemberName == type.Name
-                    || x.MemberName.StartsWith(type.Name + "`"))?.Summary ?? "";
+                    || x.MemberName.StartsWith(type.Name))?.Summary ?? "";
 
             Constants.Logger?.LogTrace("Getting Markdown Fields for Type {typeName}", type.Name);
             BuildFields(type, comments, type.GetFields().Together(type.GetStaticFields()).ToArray());
@@ -106,7 +107,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                 type.Methods.Add(item);
                 MarkdownRepo.TryAdd(item);
 
-                item.Summary = memberComments.Where(mc => mc.MemberName == item.InternalItem.GetCommentName()).FirstOrDefault(a => MethodCommentFilter(a, item))?.Summary ?? "";
+               item.Summary = memberComments.Where(mc => mc.MemberName == item.InternalItem.GetCommentName()).FirstOrDefault(a => MethodCommentFilter(a, item))?.Summary ?? "";
             }
         }
 

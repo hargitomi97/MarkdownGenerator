@@ -1,4 +1,6 @@
-﻿using igloo15.MarkdownApi.Core.Interfaces;
+﻿using igloo15.MarkdownApi.Core.Builders;
+using igloo15.MarkdownApi.Core.Interfaces;
+using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,6 +60,8 @@ namespace igloo15.MarkdownApi.Core.MarkdownItems
         /// <returns>The text content of the page or "" if no page content</returns>
         public abstract string BuildPage(ITheme theme);
 
+        
+
         void IInternalMarkdownItem.SetLocation(string location)
         {
             Location = location;
@@ -67,5 +71,6 @@ namespace igloo15.MarkdownApi.Core.MarkdownItems
         {
             FileName = filename;
         }
+
     }
 }

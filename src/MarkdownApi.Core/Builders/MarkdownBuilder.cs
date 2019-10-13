@@ -200,7 +200,7 @@ namespace igloo15.MarkdownApi.Core.Builders
       sb.Append("| ");
       foreach (var item in headers)
       {
-        sb.Append(item);
+        sb.Append(item + "<img width=475>");
         sb.Append(" | ");
       }
       sb.AppendLine();
@@ -222,7 +222,7 @@ namespace igloo15.MarkdownApi.Core.Builders
         {
           if (!changing)
           {
-            sb.Append(item2 + "<!--aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-->");
+            sb.Append(item2);
             changing = true;
           }
           else

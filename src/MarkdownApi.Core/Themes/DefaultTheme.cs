@@ -1,8 +1,15 @@
-﻿using igloo15.MarkdownApi.Core.Interfaces;
+﻿using igloo15.MarkdownApi.Core.Builders;
+using igloo15.MarkdownApi.Core.Interfaces;
 using igloo15.MarkdownApi.Core.MarkdownItems;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 using igloo15.MarkdownApi.Core.Themes.Default;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace igloo15.MarkdownApi.Core.Themes
 {
@@ -125,12 +132,7 @@ namespace igloo15.MarkdownApi.Core.Themes
         /// </summary>
         /// <param name="item">The item to build a page with</param>
         /// <returns>An empty string</returns>
-        public string BuildPage(MarkdownMethod item)
-        {
-            if (!_options.BuildMethodPages)
-                return "";
-            return _methodBuilder.BuildPage(item);
-        }
+
 
         /// <summary>
         /// In default theme this returns only ""
@@ -151,5 +153,15 @@ namespace igloo15.MarkdownApi.Core.Themes
         {
             return "";
         }
+
+        public string BuildPage(MarkdownMethod item)
+        {
+            if (!_options.BuildMethodPages)
+                return "";
+            List<string> myList = new List<string>();
+
+            return _methodBuilder.BuildPage(item, myList);
+        }
+
     }
 }

@@ -1,5 +1,7 @@
-﻿using igloo15.MarkdownApi.Core.Interfaces;
+﻿using igloo15.MarkdownApi.Core.Builders;
+using igloo15.MarkdownApi.Core.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace igloo15.MarkdownApi.Core.MarkdownItems.TypeParts
@@ -69,6 +71,7 @@ namespace igloo15.MarkdownApi.Core.MarkdownItems.TypeParts
         {
             return theme.BuildPage(this);
         }
+
 
         /// <summary>
         /// The type info of the MarkdownItem used to find references to it from other MarkdownItems

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using igloo15.MarkdownApi.Core.Builders;
 using igloo15.MarkdownApi.Core.Interfaces;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 
@@ -76,6 +77,5 @@ namespace igloo15.MarkdownApi.Core.MarkdownItems
         /// <param name="theme">The theme to be used to in building the page</param>
         /// <returns>The text content of the page or "" if no page content</returns>
         public override string BuildPage(ITheme theme) => theme.BuildPage(this);
-
     }
 }

@@ -230,7 +230,7 @@ namespace igloo15.MarkdownApi.Core
                     var result = methodInfo.GetParameters().All(b => comment.Parameters.ContainsKey(b.Name + ":" + b.ParameterType.GetCommentTypeString()));
                     if (result)
                         return result;
-
+                    
                     return methodInfo.GetParameters().All(b => comment.Parameters.ContainsKey(b.Name));
                 }
             }

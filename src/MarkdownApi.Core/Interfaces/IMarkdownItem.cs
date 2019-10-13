@@ -1,4 +1,6 @@
-﻿using igloo15.MarkdownApi.Core.MarkdownItems;
+﻿using igloo15.MarkdownApi.Core.Builders;
+using igloo15.MarkdownApi.Core.MarkdownItems;
+using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 using System.Collections.Generic;
 
 namespace igloo15.MarkdownApi.Core.Interfaces
