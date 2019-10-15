@@ -1,4 +1,4 @@
-﻿using igloo15.MarkdownApi.Core.Builders;
+using igloo15.MarkdownApi.Core.Builders;
 using igloo15.MarkdownApi.Core.Interfaces;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 using System;
@@ -168,7 +168,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
                     if (i + 1 != parameters.Length)
                     {
-                        sb.Append(">");
+                        sb.Append("<br>");
                     }
                 }
                 mb.Append(sb.ToString());

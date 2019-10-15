@@ -1,4 +1,4 @@
-﻿using igloo15.MarkdownApi.Core.Builders;
+using igloo15.MarkdownApi.Core.Builders;
 using igloo15.MarkdownApi.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -55,6 +55,11 @@ namespace igloo15.MarkdownApi.Core.MarkdownItems.TypeParts
         /// Determines if method is overriden
         /// </summary>
         public bool IsOverriden => BaseDefinition != InternalItem.DeclaringType;
+
+
+        public ParameterInfo[] Parameters => InternalItem.GetParameters();
+
+        
 
         internal MarkdownMethod(MethodInfo info, bool isStatic)
         {
