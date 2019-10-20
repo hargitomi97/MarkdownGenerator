@@ -103,6 +103,8 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
         private void BuildTable(MarkdownBuilder mb, string label, IMarkdownItem[] items, string[] headers, MarkdownType mdType)
         {
+            int counterOfQoute = 0;
+            bool flag = true;
             if (items.Any())
             {
                 mb.Header(2, label);
@@ -137,6 +139,10 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                     }
 
                     string name = item.FullName;
+                    string summary = item.Summary;
+
+                   
+
                     if (item.ItemType == MarkdownItemTypes.Method)
                     {
                         name = Cleaner.CreateFullMethodWithLinks(mdType, item.As<MarkdownMethod>(), false, _options.ShowParameterNames);
@@ -150,7 +156,23 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                         name = Cleaner.CreateFullConstructorsWithLinks(mdType, item.As<MarkdownConstructor>(), false, _options.BuildConstructorPages);
                     }
 
+                   
+                    if (summary.Contains("`"))
+                    {
+                        counterOfQoute++;
+                    }
+                    if(counterOfQoute %2 == 0)
+                    {
+                        if (flag)
+                        {
+                            
+                            flag = false;
+                        }
+                    }
+                    
+                   //Console.WriteLine(summary);
 
+                    // Console.WriteLine(counterOfQoute);
                     dataValues[0] = "<sub>"+name+"</sub>";
 
                     //if(headers.Length > 1)

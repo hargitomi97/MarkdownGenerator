@@ -253,10 +253,12 @@ namespace igloo15.MarkdownApi.Core.Builders
 
         public static string ResolveSeeElement(Match m, string ns)
         {
-            var returned = "";
-            var typeNameMatch = Regex.Match(m.Groups[0].Value, "\"[^\"]*\"");
+            /*var typeNameMatch = Regex.Match(m.Groups[0].Value, "\"[^\"]*\"");
             var typeName = typeNameMatch.Groups[0].Value.Replace("\"", "");
+
             typeName = Cleaner.CleanName(typeName, true, false);
+
+            string returned;
 
             if (typeName.Equals("T:System.Drawing.RectangleF"))
             {
@@ -285,14 +287,24 @@ namespace igloo15.MarkdownApi.Core.Builders
                 {
                     typeName = typeName.Substring(0, hereIndex);
                     returned = $"[{typeName.Split('.').Last()}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/SigStat/Common/Algorithms/Methods/" + typeName.Split('.').Last() + ".md)";
-                    Console.WriteLine(returned);
+                   // Console.WriteLine(returned);
                 }
                 else
                 {
                     returned = $"[{typeName.Split('.').Last()}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + typeName.Replace('.', '/').Substring(typeName.IndexOf(":") + 1) + ".md)";
                 }
             }
-            return returned;
+            return returned;*/
+
+            var typeName = m.Groups[1].Value;
+            if (!string.IsNullOrWhiteSpace(ns))
+            {
+                if (typeName.StartsWith(ns))
+                {
+                    return $"[{typeName}]({Regex.Replace(typeName, $"\\.(?:.(?!\\.))+$", me => me.Groups[0].Value.Replace(".", "#").ToLower())})";
+                }
+            }
+            return $"`{typeName}`";
         }
 
         public class Item1EqualityCompaerer<T1, T2> : EqualityComparer<Tuple<T1, T2>>
