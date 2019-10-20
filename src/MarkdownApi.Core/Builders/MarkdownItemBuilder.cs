@@ -1,6 +1,4 @@
-﻿
-using igloo15.MarkdownApi.Core;
-using igloo15.MarkdownApi.Core.MarkdownItems;
+﻿using igloo15.MarkdownApi.Core.MarkdownItems;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
 using System;
@@ -8,9 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace igloo15.MarkdownApi.Core.Builders
@@ -18,7 +14,7 @@ namespace igloo15.MarkdownApi.Core.Builders
 
     internal static class MarkdownItemBuilder
     {
-        public static MarkdownProject Load(string searchArea, string namespaceMatch, Dictionary<string, string> myDictionary = null)
+        public static MarkdownProject Load(string searchArea, string namespaceMatch, Dictionary<string, string> myDictionary)
         {
             List<MarkdownType> types = new List<MarkdownType>();
 
@@ -68,7 +64,7 @@ namespace igloo15.MarkdownApi.Core.Builders
             return project;
         }
 
-        private static MarkdownNamespace[] LoadDll(string dllPath, string namespaceMatch, Dictionary<string, string> myDictionary = null)
+        private static MarkdownNamespace[] LoadDll(string dllPath, string namespaceMatch, Dictionary<string, string> myDictionary)
         {
             var dllName = Path.GetFileNameWithoutExtension(dllPath);
             var commentsLookup = GetComments(dllPath, namespaceMatch, myDictionary);
@@ -179,7 +175,7 @@ namespace igloo15.MarkdownApi.Core.Builders
             return regex.IsMatch(type.Namespace != null ? type.Namespace : string.Empty);
         }
 
-        static ILookup<string, XmlDocumentComment> GetComments(string dllPath, string namespaceMatch, Dictionary<string, string> myDictionary = null)
+        static ILookup<string, XmlDocumentComment> GetComments(string dllPath, string namespaceMatch, Dictionary<string, string> myDictionary)
         {
             var dllName = Path.GetFileNameWithoutExtension(dllPath);
             var xmlPath = Path.Combine(Directory.GetParent(dllPath).FullName, dllName + ".xml");

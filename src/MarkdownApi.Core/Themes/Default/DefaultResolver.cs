@@ -84,7 +84,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                     if (_options.BuildMethodPages)
                     {
                         //Console.WriteLine($"{method.ParentType.Name}-{method.InternalItem.MetadataToken}.md");
-                        return $"{method.ParentType.Name}-{method.InternalItem.MetadataToken}.md";
+                        return $"{method.ParentType.Name}--{method.InternalItem.Name}.md";
                     }
                     return null;
             }

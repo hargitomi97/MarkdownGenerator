@@ -92,7 +92,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                     };
                 });
 
-                mb.Table(head, data);
+                mb.Table(head, data, true);
                 mb.AppendLine();
             }
         }

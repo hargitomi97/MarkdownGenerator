@@ -59,7 +59,7 @@ namespace igloo15.MarkdownApi.Tester
                 BuildMethodPages = true,
                 RootFileName = "README.md",
                 RootTitle = "API",
-                RootSummary = "",
+                RootSummary = "Official documentation of SigStat API",
                 ShowParameterNames = false,
             }
                 ),

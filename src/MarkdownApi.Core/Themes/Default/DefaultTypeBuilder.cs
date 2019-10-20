@@ -159,7 +159,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                     data.Add(dataValues);
                 }
 
-                mb.Table(headers, data);
+                mb.Table(headers, data, true);
                 mb.AppendLine();
             }
         }

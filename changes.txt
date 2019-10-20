@@ -1,0 +1,3 @@
+MarkdownBuilder.cs line 206-215: added extra image to render wide table
+MarkdownItemBuilde.cs:	added myDictionary to store names - links in pair
+VSDocParser.cs: added myDictionary, para tags change with new line, paramref changed with e.Groups[2]. Value instead of 1,

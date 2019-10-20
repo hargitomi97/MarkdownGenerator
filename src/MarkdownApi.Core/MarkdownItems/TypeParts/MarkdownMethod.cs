@@ -61,6 +61,8 @@ namespace igloo15.MarkdownApi.Core.MarkdownItems.TypeParts
 
         
 
+        
+
         internal MarkdownMethod(MethodInfo info, bool isStatic)
         {
             InternalItem = info;
