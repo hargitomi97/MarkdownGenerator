@@ -43,12 +43,11 @@ namespace igloo15.MarkdownApi.Tester
             }*/
 
             var factory = new LoggerFactory();
-            var myDictionary = new Dictionary<string, string>();
 
             factory.AddConsole();
 
             //var project = MarkdownApiGenerator.GenerateProject(@"D:\Development\Projects\Nuget.Searcher\dist\NuGetSearcher\Release\netstandard2.0\publish\*.dll", "", "Api");
-            var project = MarkdownApiGenerator.GenerateProject("../../../**/SigStat.Common.dll", "", factory, myDictionary);
+            var project = MarkdownApiGenerator.GenerateProject("../../../**/SigStat.Common.dll", "", factory);
             //var project = MarkdownApiGenerator.GenerateProject("../../../**/MarkDownTestProject.dll", "", factory);
             //var project = MarkdownApiGenerator.GenerateProject("../../../../../Nuget.Searcher/dist/NuGetSearcher/Release/netstandard2.0/publish/igloo15.NuGetSearcher.dll", factory);
 

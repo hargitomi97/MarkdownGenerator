@@ -24,7 +24,7 @@ namespace igloo15.MarkdownApi.Core
         /// <param name="myDictionary"></param>
         /// <param name="factory">The logger factory</param>
         /// <returns>The markdown project containing the items to be rendered</returns>
-        public static MarkdownProject GenerateProject(string searchArea, string namespaceMatch = "", ILoggerFactory factory = null, Dictionary<string, string> myDictionary = null)
+        public static MarkdownProject GenerateProject(string searchArea, string namespaceMatch = "", ILoggerFactory factory = null)
         {
             Constants.Logger = factory?.CreateLogger("MarkdownApiGenerator");
 
@@ -35,7 +35,7 @@ namespace igloo15.MarkdownApi.Core
             }
 
             Constants.Logger?.LogInformation("Beginning Loading of dlls and xml files using search area {searchArea}", searchArea);
-            var project = MarkdownItemBuilder.Load(searchArea, namespaceMatch, myDictionary);
+            var project = MarkdownItemBuilder.Load(searchArea, namespaceMatch);
 
             Constants.Logger?.LogInformation("Generating Lookup of all Markdown Items found");
             project.AllItems = MarkdownRepo.GetLookup();
@@ -51,9 +51,9 @@ namespace igloo15.MarkdownApi.Core
         /// <param name="searchArea">This should be a relative path from the current directory using forward slashes. A globber pattern may be used. Also it must end in .dll. Additionally you may include multiple patterns separating each with ';'</param>
         /// <param name="factory">The logger factory</param>
         /// <returns>The markdown project containing the items to be rendered</returns>
-        public static MarkdownProject GenerateProject(string searchArea, ILoggerFactory factory, Dictionary<string, string> myDictionary = null)
+        public static MarkdownProject GenerateProject(string searchArea, ILoggerFactory factory)
         {
-            return GenerateProject(searchArea, "", factory, myDictionary);
+            return GenerateProject(searchArea, "", factory);
         }
     }
 }

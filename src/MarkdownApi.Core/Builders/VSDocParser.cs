@@ -97,13 +97,13 @@ namespace igloo15.MarkdownApi.Core.Builders
 
     internal static class VSDocParser
     {
-        public static XmlDocumentComment[] ParseXmlComment(XDocument xDocument, Dictionary<string, string> myDictionary)
+        public static XmlDocumentComment[] ParseXmlComment(XDocument xDocument)
         {
-            return ParseXmlComment(xDocument, null, myDictionary);
+            return ParseXmlComment(xDocument, null);
         }
 
         // cheap, quick hack parser:)
-        internal static XmlDocumentComment[] ParseXmlComment(XDocument xDocument, string namespaceMatch, Dictionary<string, string> myDictionary)
+        internal static XmlDocumentComment[] ParseXmlComment(XDocument xDocument, string namespaceMatch)
         {
             return xDocument.Descendants("member")
                 .Select(x =>
@@ -123,7 +123,7 @@ namespace igloo15.MarkdownApi.Core.Builders
                     summaryXml = Regex.Replace(summaryXml, "<para>", "<br>"); // replace para with a new line
                     summaryXml = Regex.Replace(summaryXml, "</para>", " "); // remove closing para tag
 
-                    summaryXml = Regex.Replace(summaryXml, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, namespaceMatch, myDictionary));
+                    summaryXml = Regex.Replace(summaryXml, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, namespaceMatch));
 
                     var parsed = Regex.Replace(summaryXml, @"<(type)*paramref name=""([^\""]*)""\s*\/>", e => $"`{e.Groups[2].Value}`");
 
@@ -256,149 +256,7 @@ namespace igloo15.MarkdownApi.Core.Builders
             var returned = "";
             var typeNameMatch = Regex.Match(m.Groups[0].Value, "\"[^\"]*\"");
             var typeName = typeNameMatch.Groups[0].Value.Replace("\"", "");
-            //Console.WriteLine(typeName);
-
-            /*string assemblyFolder = Assembly.GetExecutingAssembly().Location;
-            //Console.WriteLine(assemblyFolder);
-            Assembly assembly = Assembly.LoadFrom("SigStat.Common.dll");
-            
-            var Classes = "";
-            var Fields = "";
-            var Properties = "";
-            var Interfaces = "";
-            var Generic = "";
-            var webLink = "";
-            var Events = "";
-            var Methods = "";
-            foreach (Type type in assembly.GetTypes())
-            {
-                
-                if (type.IsClass)
-                {
-                    if (!(type.ToString().Contains("+") || type.ToString().Contains(">") || type.ToString().Contains("<")))
-                    {
-                        Classes = type.ToString();
-                        int index = Classes.IndexOf("[");
-                        if (index > 0)
-                            Classes = Classes.Substring(0, index);
-                        //Console.WriteLine(Classes.Split('.').Last().Replace('`', '-') + " " + Classes.Replace(".", "/"));
-                        myDictionary[Classes.Substring(Classes.IndexOf('.') + 1).Substring(Classes.IndexOf('.')).Replace('`', '-')] = Classes.Replace(".", "/");
-                        //myDictionary[Classes.Split('.').Last().Replace('`', '-')] = Classes.Replace(".", "/");
-                    }
-                }
-                if (type.IsInterface)
-                {
-                    var cc = "";
-                    Interfaces = type.ToString();
-                    cc = type.ToString();
-                    if (cc.Contains('.'))
-                    {
-                        cc = cc.Substring(cc.IndexOf('.') + 1);
-                    }
-                    if (cc.Contains('.'))
-                    {
-                        cc = cc.Substring(cc.IndexOf('.') + 1);
-                    }
-                    myDictionary[cc] = Interfaces.Replace(".", "/");
-                }
-                if (type.ToString().Contains("`1") && !type.ToString().Contains("<>") && !type.ToString().Contains("+"))
-                {
-                    Generic = type.ToString();
-                    int index = Generic.IndexOf("[");
-                    if (index > 0)
-                        Generic = Generic.Substring(0, index);
-
-                    myDictionary[Generic] = Generic.Replace(".", "/").Replace('`', '-');
-                }
-                foreach (FieldInfo field in type.GetFields())
-                {
-                    if (!field.Name.Contains("<>") && !field.Name.Contains("<>") && !field.Name.Contains("Value") && !field.Name.Contains("+"))
-                    {
-                        Fields = field.Name;
-                        //Console.WriteLine(field.DeclaringType.ToString().Split('.').Last() + "." + Fields + " " + field.DeclaringType.ToString().Replace(".", "/"));
-                        myDictionary[field.DeclaringType.ToString().Split('.').Last() + "." + Fields] = field.DeclaringType.ToString().Replace(".", "/");
-                    }
-                }
-                foreach (PropertyInfo property in type.GetProperties())
-                {
-                    if (!property.Name.Contains("+"))
-                    {
-                        var xx = "";
-                        Properties = property.Name;
-                        xx = property.DeclaringType.ToString();
-                        xx = xx.Substring(xx.IndexOf('.') + 1);
-                        if (xx.Contains('.'))
-                        {
-                            xx = xx.Substring(xx.IndexOf('.') + 1);
-                        }
-                        //Console.WriteLine(Properties);
-                        //Console.WriteLine(Properties + " " + property.DeclaringType.ToString().Replace(".", "/"));
-                        myDictionary[xx + "." + Properties] = property.DeclaringType.ToString().Replace(".", "/");
-                        //myDictionary[Properties] = property.DeclaringType.ToString().Replace(".", "/");
-                    }
-                }
-                foreach (EventInfo event_ in type.GetEvents())
-                {
-                    var zz = "";
-                    Events = event_.Name;
-                    zz = event_.DeclaringType.ToString();
-                    zz = zz.Substring(zz.IndexOf('.') + 1);
-                    if (zz.Contains('.'))
-                    {
-                        zz = zz.Substring(zz.IndexOf('.') + 1);
-                    }
-                    myDictionary[zz + "." + Events] = event_.DeclaringType.ToString().Replace(".", "/");
-                }
-                foreach (MethodInfo method in type.GetMethods())
-                {
-                    var yy = "";
-                    Methods = method.Name;
-                    yy = method.DeclaringType.ToString();
-                    yy = yy.Substring(yy.IndexOf('.') + 1);
-                    if (yy.Contains('.'))
-                    {
-                        yy = yy.Substring(yy.IndexOf('.') + 1);
-                    }
-                    //Console.WriteLine(yy + "." + Methods + " " + method.DeclaringType.ToString().Replace(".", "/"));
-                    myDictionary[yy + "." + Methods] = method.DeclaringType.ToString().Replace(".", "/");
-                }
-            }
-
-            foreach (KeyValuePair<string, string> pair in myDictionary) // osztályok benne
-            {
-                //Console.WriteLine(pair.Key + "\t" + pair.Value);
-            }
-            
-            if (typeName.Equals("Microsoft.Extensions.Logging.ILogger"))
-            {
-                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/Microsoft.Extensions.Logging.ILogger)";
-                return returned;
-            }
-
-            if (typeName.Equals("System.Collections.Generic.KeyNotFoundException"))
-            {
-                returned = $"[{typeName}]" + "(https://docs.microsoft.com/en-us/dotnet/api/System.Collections.Generic.KeyNotFoundException)";
-                return returned;
-            }
-            //typeName = typeName.Substring(typeName.IndexOf('.') + 1);
-            //typeName = typeName.Substring(typeName.IndexOf('.') + 1);
-           // typeName = typeName.Replace("`", "-");
-            //special case for HSCP
-            int hereIndex = typeName.IndexOf("(");
-            if (hereIndex > 0)
-                typeName = typeName.Substring(0, hereIndex);
-            //Console.WriteLine(typeName);
-            webLink = myDictionary.FirstOrDefault(x => x.Key == typeName).Value;
-            //Console.WriteLine(webLink);
-            if (webLink != null && webLink.Contains("`"))
-            {
-                webLink = webLink.Replace('`', '-');
-            }*/
-
             typeName = Cleaner.CleanName(typeName, true, false);
-            //Console.WriteLine(typeName);
-
-            
 
             if (typeName.Equals("T:System.Drawing.RectangleF"))
             {
@@ -426,15 +284,12 @@ namespace igloo15.MarkdownApi.Core.Builders
                 if (hereIndex > 0)
                 {
                     typeName = typeName.Substring(0, hereIndex);
-                    //Console.WriteLine(typeName);
                     returned = $"[{typeName.Split('.').Last()}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/SigStat/Common/Algorithms/Methods/" + typeName.Split('.').Last() + ".md)";
                     Console.WriteLine(returned);
                 }
                 else
                 {
                     returned = $"[{typeName.Split('.').Last()}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + typeName.Replace('.', '/').Substring(typeName.IndexOf(":") + 1) + ".md)";
-                    // returned = $"[{typeName.Split('.').Last()}]" + "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/" + webLink + ".md)";
-                    // Console.WriteLine(returned);
                 }
             }
             return returned;
