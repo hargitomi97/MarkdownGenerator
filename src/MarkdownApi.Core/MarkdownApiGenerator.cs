@@ -1,4 +1,4 @@
-﻿using igloo15.MarkdownApi.Core.Builders;
+using igloo15.MarkdownApi.Core.Builders;
 using igloo15.MarkdownApi.Core.MarkdownItems;
 using Microsoft.Extensions.Logging;
 using System;
@@ -39,6 +39,7 @@ namespace igloo15.MarkdownApi.Core
 
             Constants.Logger?.LogInformation("Generating Lookup of all Markdown Items found");
             project.AllItems = MarkdownRepo.GetLookup();
+
 
             Constants.Logger?.LogInformation("{markdownItemCount} Markdown Items found with {searchArea}", project.AllItems.Count, searchArea);
 

@@ -1,4 +1,4 @@
-﻿using igloo15.MarkdownApi.Core.Interfaces;
+using igloo15.MarkdownApi.Core.Interfaces;
 using igloo15.MarkdownApi.Core.MarkdownItems;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 using System;
@@ -78,12 +78,11 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                     return null;
                 case MarkdownConstructor constructor:
                     if(_options.BuildConstructorPages)
-                        return $"{constructor.ParentType.Name}-{constructor.InternalItem.MetadataToken}.md";
+                        return $"{constructor.ParentType.Name}--{constructor.InternalItem.MetadataToken}.md";
                     return null;
                 case MarkdownMethod method:
                     if (_options.BuildMethodPages)
                     {
-                        //Console.WriteLine($"{method.ParentType.Name}-{method.InternalItem.MetadataToken}.md");
                         return $"{method.ParentType.Name}--{method.InternalItem.Name}.md";
                     }
                     return null;

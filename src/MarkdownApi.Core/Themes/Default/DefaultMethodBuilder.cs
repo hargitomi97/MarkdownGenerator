@@ -53,9 +53,9 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
 
 
-            if (File.Exists(@"C:\Users\Tomi\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml"))
+            if (File.Exists(@"C:\Users\Tom\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml"))
             {
-                comments = ParseXmlParameterComment(XDocument.Parse(File.ReadAllText(@"C:\Users\Tomi\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml")), "");
+                comments = ParseXmlParameterComment(XDocument.Parse(File.ReadAllText(@"C:\Users\Tom\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml")), "");
 
                 foreach (var k in comments)
                 {
@@ -206,9 +206,9 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                 lookUpType = item.As<MarkdownMethod>().ReturnType;
             var returned = Cleaner.CreateFullTypeWithLinks(item, lookUpType, false, false);
 
-            if (File.Exists(@"C:\Users\Tomi\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml"))
+            if (File.Exists(@"C:\Users\Tom\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml"))
             {
-                comments = VSDocParser.ParseXmlReturnComment(XDocument.Parse(File.ReadAllText(@"C:\Users\Tomi\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml")), "");
+                comments = VSDocParser.ParseXmlReturnComment(XDocument.Parse(File.ReadAllText(@"C:\Users\Tom\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml")), "");
                 if (comments != null)
                 {
                     foreach (var k in comments)

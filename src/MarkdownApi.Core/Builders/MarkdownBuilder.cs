@@ -203,14 +203,14 @@ namespace igloo15.MarkdownApi.Core.Builders
                 {
                     if (!flag)
                     {
-                        sb.Append(item + "<div><a href=\"#\"><img width=400></a></div>");
+                        sb.Append(item + "<div><a href=\"#\"><img width=225></a></div>");
                         sb.Append(" | ");
                         flag = true;
                     }
 
                     else
                     {
-                        sb.Append(item + "<div><a href=\"#\"><img width=475></a></div>");
+                        sb.Append(item + "<div><a href=\"#\"><img width=525></a></div>");
                         sb.Append(" | ");
                         flag = false;
                     }

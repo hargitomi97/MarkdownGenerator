@@ -1,4 +1,4 @@
-﻿using igloo15.MarkdownApi.Core.Builders;
+using igloo15.MarkdownApi.Core.Builders;
 using igloo15.MarkdownApi.Core.Interfaces;
 using igloo15.MarkdownApi.Core.MarkdownItems;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
@@ -170,13 +170,13 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                         }
                     }
                     
-                   //Console.WriteLine(summary);
+                  
 
                     // Console.WriteLine(counterOfQoute);
-                    dataValues[0] = "<sub>"+name+"</sub>";
+                    dataValues[0] = name;
 
                     //if(headers.Length > 1)
-                        dataValues[1] = "<sub>"+item.Summary+"</sub>";
+                        dataValues[1] = item.Summary;
 
                     data.Add(dataValues);
                 }

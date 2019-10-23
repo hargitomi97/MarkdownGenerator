@@ -1,4 +1,4 @@
-﻿using igloo15.MarkdownApi.Core.Interfaces;
+using igloo15.MarkdownApi.Core.Interfaces;
 using igloo15.MarkdownApi.Core.MarkdownItems;
 using Microsoft.Extensions.Logging;
 using System;
