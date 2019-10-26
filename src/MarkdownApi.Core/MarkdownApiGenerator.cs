@@ -1,12 +1,6 @@
 using igloo15.MarkdownApi.Core.Builders;
 using igloo15.MarkdownApi.Core.MarkdownItems;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using Microsoft.Extensions.FileSystemGlobbing;
-using igloo15.MarkdownApi.Core.Interfaces;
 
 namespace igloo15.MarkdownApi.Core
 {
@@ -21,7 +15,6 @@ namespace igloo15.MarkdownApi.Core
         /// </summary>
         /// <param name="searchArea">This should be a relative path from the current directory using forward slashes. A globber pattern may be used. Also it must end in .dll. Additionally you may include multiple patterns separating each with ';'</param>
         /// <param name="namespaceMatch">If provided will only build items that start with the provide string</param>
-        /// <param name="myDictionary"></param>
         /// <param name="factory">The logger factory</param>
         /// <returns>The markdown project containing the items to be rendered</returns>
         public static MarkdownProject GenerateProject(string searchArea, string namespaceMatch = "", ILoggerFactory factory = null)

@@ -3,14 +3,13 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace igloo15.MarkdownApi.Core.MarkdownItems
 {
-  /// <summary>
-  /// A markdown project used to produce markdown files
-  /// </summary>
-  public class MarkdownProject : AbstractMarkdownItem
+    /// <summary>
+    /// A markdown project used to produce markdown files
+    /// </summary>
+    public class MarkdownProject : AbstractMarkdownItem
   {
     /// <summary>
     /// All the renderable markdown items
@@ -94,7 +93,6 @@ namespace igloo15.MarkdownApi.Core.MarkdownItems
 
       if (!String.IsNullOrEmpty(projectContent))
       File.WriteAllText(Path.Combine(rootLocation, FileName), projectContent);
-      
       int pageCount = 0;
       foreach (var item in AllItems.Values)
       {
@@ -104,7 +102,6 @@ namespace igloo15.MarkdownApi.Core.MarkdownItems
         {
           pageCount++;
           var place = Path.Combine(rootLocation, item.Location);
-          
           var filePath = Path.Combine(place, item.FileName);
           
           if (!Directory.Exists(place))

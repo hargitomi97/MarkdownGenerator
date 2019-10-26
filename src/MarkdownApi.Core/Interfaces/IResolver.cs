@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace igloo15.MarkdownApi.Core.Interfaces
+﻿namespace igloo15.MarkdownApi.Core.Interfaces
 {
     /// <summary>
     /// Resolves the path/folder of the markdown item and gets a file name

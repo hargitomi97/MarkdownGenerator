@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Xml;
 
 namespace igloo15.MarkdownApi.Core
 {
@@ -236,10 +235,9 @@ namespace igloo15.MarkdownApi.Core
             }
 
             return false;
-            return false;
         }
 
-
+        #region GetTypeParts
         public static MarkdownConstructor[] GetConstructors(this MarkdownType mdType)
         {
             return mdType.InternalType.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
@@ -348,6 +346,6 @@ namespace igloo15.MarkdownApi.Core
                 return false;
             }
         }
-
+        #endregion
     }
 }

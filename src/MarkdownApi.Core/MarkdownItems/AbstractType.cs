@@ -1,9 +1,7 @@
 ﻿using igloo15.MarkdownApi.Core.Builders;
-using igloo15.MarkdownApi.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace igloo15.MarkdownApi.Core.MarkdownItems
 {

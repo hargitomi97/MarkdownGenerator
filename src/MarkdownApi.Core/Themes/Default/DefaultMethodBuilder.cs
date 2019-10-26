@@ -1,14 +1,10 @@
 using igloo15.MarkdownApi.Core.Builders;
 using igloo15.MarkdownApi.Core.Interfaces;
-using igloo15.MarkdownApi.Core.MarkdownItems;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using static igloo15.MarkdownApi.Core.Builders.VSDocParser;
@@ -21,14 +17,11 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
     public class DefaultMethodBuilder
     {
         private DefaultOptions _options;
-        private string name = "";
-        private string foundParameter = "";
-        private string foundReturn = "";
-        private string ParameterComments;
+        private string foundReturn;
 
 
         /// <summary>
-        /// Constructs a markdown method page builder  - Warning this is not yet implemented
+        /// Constructs a markdown method page builder
         /// </summary>
         /// <param name="options">The default options to be constructed with</param>
         public DefaultMethodBuilder(DefaultOptions options)
@@ -37,45 +30,47 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
         }
 
         /// <summary>
-        /// Builds the markdown method page content - Warning this is not yet implemented
+        /// Builds the markdown method page content
         /// </summary>
         /// <param name="item">The markdown method item</param>
         /// <returns>The markdown content</returns>
         public string BuildPage(MarkdownMethod item)
         {
-            Dictionary<string, string> Parameterpairs = new Dictionary<string, string>();
-            Dictionary<string, string> Returnpairs = new Dictionary<string, string>();
+            Dictionary<string, string> parameterPairs = new Dictionary<string, string>();
+            Dictionary<string, string> returnPairs = new Dictionary<string, string>();
             XmlDocumentComment[] comments = new XmlDocumentComment[0];
+
+
+
             MarkdownBuilder mb = new MarkdownBuilder();
-            name = Cleaner.CreateFullParametersInMethods(item, item.As<MarkdownMethod>(), false, true);
+            // method name + param name
+            var name = Cleaner.CreateFullMethodWithLinks(item, item.As<MarkdownMethod>(), false, true, true);
+            var FullName = item.Name + name;
 
 
-
-
-
-            if (File.Exists(@"C:\Users\Tom\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml"))
+            if (File.Exists(MarkdownItemBuilder.xmlPath))
             {
-                comments = ParseXmlParameterComment(XDocument.Parse(File.ReadAllText(@"C:\Users\Tom\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml")), "");
+                comments = VSDocParser.ParseXmlParameterComment(XDocument.Parse(File.ReadAllText(MarkdownItemBuilder.xmlPath)), "");
 
-                foreach (var k in comments)
+                foreach (var comment in comments)
                 {
-                    foreach (var i in item.Parameters)
+                    foreach (var param in item.Parameters)
                     {
 
-                        foundParameter = k.Parameters.FirstOrDefault(x => x.Key == i.Name).Value;//.Find(y => y.ToString() == x.Key)).Value;
-                        if (foundParameter != null)
+                        var foundParameterComment = comment.Parameters.FirstOrDefault(x => x.Key == param.Name).Value;
+                        if (foundParameterComment != null)
                         {
+                            foundParameterComment = foundParameterComment.Substring(0, foundParameterComment.LastIndexOf('<'));
+                            foundParameterComment = foundParameterComment.Substring(foundParameterComment.IndexOf('>') + 1);
 
-                            //Console.WriteLine(i + " " + found);
-                            if (!Parameterpairs.ContainsKey(i.Name))
-                                Parameterpairs.Add(i.Name, foundParameter);
+                            var MemberName = Cleaner.CleanName(comment.MemberName, false, false);
+                            // method name + param name + parameter summary
+                            if (!parameterPairs.ContainsKey(MemberName + " " + param.Name))
+                                parameterPairs.Add(MemberName + " " + param.Name, foundParameterComment);
                         }
                     }
                 }
             }
-
-
-           
 
             var typeZeroHeaders = new[] { "Return", "Name" };
 
@@ -90,112 +85,140 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
             mb.Append("#### Parameters");
             mb.AppendLine();
-
+           
+            Console.WriteLine(FullName);
             var numberOfParameters = item.Parameters.Length;
+
             if (numberOfParameters == 1)
             {
-                //Console.WriteLine(name.Split('[').FirstOrDefault());
-                ParameterComments = Parameterpairs.FirstOrDefault(x => x.Key == name.Split('[').FirstOrDefault().Trim()).Value;
-                if (ParameterComments != null)
+                var MethodName = FullName.Substring(0, FullName.IndexOf(" "));
+                var ParamName = FullName.Substring(FullName.IndexOf(" "));
+                ParamName = ParamName.Substring(0,ParamName.IndexOf("["));
+                var methodAndParamName = MethodName + ParamName;
+                
+
+                var ParameterComment = parameterPairs.FirstOrDefault(x => x.Key == methodAndParamName).Value;
+                if (ParameterComment != null)
                 {
-                    var ParameterType = name.Substring(name.IndexOf('['));
-                    mb.Append("**`" + name.Split('[').FirstOrDefault().Trim() + "`**" + "  " + ParameterType + "<br>" + ParameterComments);
+                    //var ParameterName = Cleaner.BoldName(FullName.Substring(FullName.IndexOf(" ") + 1).Split('[').FirstOrDefault().Trim());
+                    ParamName = Cleaner.BoldName(ParamName.Trim());
+                    var ParameterType = FullName.Substring(FullName.IndexOf('['));
+                    ParameterComment = Regex.Replace(ParameterComment, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, ""));
+                    mb.Append(ParamName + "  " + ParameterType + "<br>" + ParameterComment);
+                    //Console.WriteLine(ParameterName + "  " + ParameterType + "<br>" + ParameterComment);
                 }
             }
 
 
             if (numberOfParameters == 2)
             {
-                int index2 = name.IndexOf('>');
-                ParameterComments = Parameterpairs.FirstOrDefault(y => y.Key == name.Split('[').FirstOrDefault().Trim()).Value;
-                // Console.WriteLine(ParameterComments); OK
+                int index2 = FullName.IndexOf('>');
 
-                if (ParameterComments != null)
+                var methodAndParamName = FullName.Split('[').FirstOrDefault().Trim();
+
+                var ParameterComment = parameterPairs.FirstOrDefault(x => x.Key == methodAndParamName).Value;
+
+                if (ParameterComment != null)
                 {
-                    var append = name.Split('[').FirstOrDefault().Trim();
-                    // Console.WriteLine(append); OK
-                    var ParameterTypeBegin = name.Substring(name.IndexOf('['));
+                    var ParameterName = Cleaner.BoldName(FullName.Substring(FullName.IndexOf(" ") + 1).Split('[').FirstOrDefault().Trim());
+                    var ParameterTypeBegin = FullName.Substring(FullName.IndexOf('['));
                     var ParameterType = ParameterTypeBegin.Substring(0, ParameterTypeBegin.IndexOf("<br>"));
-                    //Console.WriteLine(ParameterType);
-                    mb.Append("**`" + append + "`**" + "  " + ParameterType + "<br>" + ParameterComments + "<br><br>");
-                    //Console.WriteLine("**`" + append + "`**" + "  " + ParameterType + "<br>" + ParameterComments);
+                    ParameterComment = Regex.Replace(ParameterComment, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, ""));
+                    mb.Append(ParameterName + "  " + ParameterType + "<br>" + ParameterComment + "<br><br>");
                 }
 
                 if (index2 > 0)
                 {
-                    var findSecond = name.Substring(name.IndexOf("<br>") + 4).Split('[').FirstOrDefault().Trim();
-                    ParameterComments = Parameterpairs.FirstOrDefault(y => y.Key == findSecond).Value;
-                    if (ParameterComments != null)
+                    var MethodName = FullName.Substring(0, FullName.IndexOf(" "));
+                    var findSecond = MethodName + " " + FullName.Substring(FullName.IndexOf("<br>") + 4).Split('[').FirstOrDefault().Trim();
+                    ParameterComment = parameterPairs.FirstOrDefault(x => x.Key == findSecond).Value;
+                    if (ParameterComment != null)
                     {
-                        var ParameterTypeBegin = name.Substring(name.IndexOf("<br>") + 4);
+                        var ParameterName = Cleaner.BoldName(findSecond.Substring(findSecond.IndexOf(" ") + 1).Split('[').FirstOrDefault().Trim());
+                        var ParameterTypeBegin = FullName.Substring(FullName.IndexOf("<br>") + 4);
                         var ParameterType = ParameterTypeBegin.Substring(ParameterTypeBegin.IndexOf("["));
-                        mb.Append("**`" + findSecond + "`**" + "  " + ParameterType + "<br>" + ParameterComments);
-                        //Console.WriteLine("**`" + findSecond + "`**" + "  " + ParameterType + "<br>" + ParameterComments);
+                        ParameterComment = Regex.Replace(ParameterComment, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, ""));
+                        mb.Append(ParameterName + "  " + ParameterType + "<br>" + ParameterComment);
                     }
                 }
             }
 
             if (numberOfParameters == 3)
             {
-                int index2 = name.IndexOf('>');
-                //Console.WriteLine(name);
-                ParameterComments = Parameterpairs.FirstOrDefault(y => y.Key == name.Split('[').FirstOrDefault().Trim()).Value;
+                int index2 = FullName.IndexOf('>');
 
-                if (ParameterComments != null)
+                var methodAndParamName = FullName.Split('[').FirstOrDefault().Trim();
+
+                var ParameterComment = parameterPairs.FirstOrDefault(x => x.Key == methodAndParamName).Value;
+
+                if (ParameterComment != null)
                 {
-                    var append = name.Split('[').FirstOrDefault().Trim();
-                    var ParameterTypeBegin = name.Substring(name.IndexOf('['));
+                    var ParameterName = Cleaner.BoldName(FullName.Substring(FullName.IndexOf(" ") + 1).Split('[').FirstOrDefault().Trim());
+                    var ParameterTypeBegin = FullName.Substring(FullName.IndexOf('['));
                     var ParameterType = ParameterTypeBegin.Substring(0, ParameterTypeBegin.IndexOf("<br>"));
-
-                    mb.Append("**`" + append + "`**" + "  " + ParameterType + "<br>" + ParameterComments + "<br><br>");
-                    //Console.WriteLine("**`" + append + "`**" + "  " + ParameterType + "<br>" + ParameterComments+ "<br><br>");
+                    ParameterComment = Regex.Replace(ParameterComment, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, ""));
+                    mb.Append(ParameterName + "  " + ParameterType + "<br>" + ParameterComment + "<br><br>");
+                    //Console.WriteLine(ParameterName + "  " + ParameterType + "<br>" + ParameterComment + "<br><br>");
                 }
 
                 if (index2 > 0)
                 {
-                    var findSecond = name.Substring(name.IndexOf("<br>") + 4).Split('[').FirstOrDefault().Trim();
-                    //Console.WriteLine(findSecond);
-                    ParameterComments = Parameterpairs.FirstOrDefault(y => y.Key == findSecond).Value;
-                    if (ParameterComments != null)
+                    var MethodName = FullName.Substring(0, FullName.IndexOf(" "));
+                    // Console.WriteLine(FullName);
+                    var findSecond = MethodName + " " + FullName.Substring(FullName.IndexOf("<br>") + 4).Split('[').FirstOrDefault().Trim();
+                    ParameterComment = parameterPairs.FirstOrDefault(x => x.Key == findSecond).Value;
+                    if (ParameterComment != null)
                     {
-                        var ParameterTypeBegin = name.Substring(name.IndexOf("<br>") + 4);
+                        var ParameterName = Cleaner.BoldName(findSecond.Substring(findSecond.IndexOf(" ") + 1).Split('[').FirstOrDefault().Trim());
+                        var ParameterTypeBegin = FullName.Substring(FullName.IndexOf("<br>") + 4);
                         var ParameterType = ParameterTypeBegin.Substring(ParameterTypeBegin.IndexOf("["));
-                        var final = ParameterType.Substring(0, ParameterType.IndexOf(")") + 1);
-                        mb.Append("**`" + findSecond + "`**" + "  " + final + "<br>" + ParameterComments + "<br><br>");
-                        //Console.WriteLine(ParameterTypeBegin);
-                        //Console.WriteLine("**`" + findSecond + "`**" + "  " + final + "<br>" + ParameterComments + "<br><br>");
-                        int index3 = ParameterTypeBegin.IndexOf(")<br>");
-                        int index3alt = ParameterTypeBegin.IndexOf(")><br>");
-                        if (index3 > 0)
+                        ParameterType = ParameterType.Substring(0, ParameterType.IndexOf("<br>"));
+                        ParameterComment = Regex.Replace(ParameterComment, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, ""));
+                        mb.Append(ParameterName + "  " + ParameterType + "<br>" + ParameterComment + "<br><br>");
+                    }
+
+                    // ----- idáig OK
+
+
+                    var ParameterTypeBeginx = FullName.Substring(FullName.IndexOf("<br>") + 4);
+                    int index3 = FullName.LastIndexOf(")<br>");
+                    int index3alt = FullName.LastIndexOf(")><br>");
+                    if (index3 > 0)
+                    {
+                        MethodName = FullName.Substring(0, FullName.IndexOf(" "));
+                        findSecond = MethodName + " " + FullName.Substring(FullName.LastIndexOf(")<br>") + 5).Split('[').FirstOrDefault().Trim();
+                        ParameterComment = parameterPairs.FirstOrDefault(x => x.Key == findSecond).Value;
+                        if (ParameterComment != null)
                         {
-                            var test = ParameterTypeBegin.Substring(index3 + 5);
-                            var append = test.Split('[').FirstOrDefault().Trim();
-                            int index4 = test.Trim().IndexOf('[');
-                            if (index4 > 0)
-                            {
-                                ParameterComments = Parameterpairs.FirstOrDefault(y => y.Key == append).Value;
-                                var ParameterTypex = test.Trim().Substring(index4);
-                                mb.Append("**`" + append + "`**" + "  " + ParameterTypex + "<br>" + ParameterComments);
-
-                            }
-
+                            var ParameterName = Cleaner.BoldName(findSecond.Substring(findSecond.IndexOf(" ") + 1).Split('[').FirstOrDefault().Trim());
+                            var ParameterTypeBegin = FullName.Substring(FullName.IndexOf("<br>") + 4);
+                            var ParameterType = ParameterTypeBegin.Substring(ParameterTypeBegin.IndexOf("["));
+                            ParameterType = ParameterType.Substring(0, ParameterType.IndexOf("<br>"));
+                            ParameterComment = Regex.Replace(ParameterComment, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, ""));
+                            mb.Append(ParameterName + "  " + ParameterType + "<br>" + ParameterComment);
+                           
                         }
-                        if (index3alt > 0)
-                        {
-                            var test = ParameterTypeBegin.Substring(index3alt + 6).Trim();
-                            var append = test.Split('[').FirstOrDefault().Trim();
-                            int index4 = test.Trim().IndexOf('[');
-                            if (index4 > 0)
-                            {
-                                ParameterComments = Parameterpairs.FirstOrDefault(y => y.Key == append).Value;
 
-                                var ParameterTypex = test.Trim().Substring(index4);
-                                mb.Append("**`" + append + "`**" + "  " + ParameterTypex + "<br>" + ParameterComments);
-                            }
+                    }
+                    if (index3alt > 0)
+                    {
+                        MethodName = FullName.Substring(0, FullName.IndexOf(" "));
+                        findSecond = MethodName + " " + FullName.Substring(FullName.LastIndexOf(")><br>") + 6).Split('[').FirstOrDefault().Trim();
+                        ParameterComment = parameterPairs.FirstOrDefault(x => x.Key == findSecond).Value;
+                        if(ParameterComment != null)
+                        {
+                            var ParameterName = Cleaner.BoldName(findSecond.Substring(findSecond.IndexOf(" ") + 1).Split('[').FirstOrDefault().Trim());
+                            var ParameterTypeBegin = FullName.Substring(FullName.LastIndexOf("<br>") + 5);
+                            var ParameterType = ParameterTypeBegin.Substring(ParameterTypeBegin.IndexOf("["));
+                            
+                            ParameterComment = Regex.Replace(ParameterComment, @"<see cref=""\w:([^\""]*)""\s*\/>", m => ResolveSeeElement(m, ""));
+                            mb.Append(ParameterName + "  " + ParameterType + "<br>" + ParameterComment);
+                            
                         }
                     }
                 }
             }
+            
 
 
             mb.AppendLine();
@@ -206,26 +229,20 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                 lookUpType = item.As<MarkdownMethod>().ReturnType;
             var returned = Cleaner.CreateFullTypeWithLinks(item, lookUpType, false, false);
 
-            if (File.Exists(@"C:\Users\Tom\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml"))
+            if (File.Exists(MarkdownItemBuilder.xmlPath))
             {
-                comments = VSDocParser.ParseXmlReturnComment(XDocument.Parse(File.ReadAllText(@"C:\Users\Tom\Desktop\sigstat\src\SigStat.Common\bin\Debug\net461\SigStat.Common.xml")), "");
+                comments = VSDocParser.ParseXmlComment(XDocument.Parse(File.ReadAllText(MarkdownItemBuilder.xmlPath)), "");
                 if (comments != null)
                 {
                     foreach (var k in comments)
                     {
                         k.MemberName = Cleaner.CleanName(k.MemberName, false, false);
-                        //Console.WriteLine(k.MemberName + " " + k.Returns);
-                        //Console.WriteLine(k.MemberName);
-
-                        //Console.WriteLine(item.Name);
-                        //Console.WriteLine(k.Returns);
-                        //Console.WriteLine(k.MemberName + " " + k.Returns);
-                        Returnpairs[k.MemberName] = k.Returns;
+                        returnPairs[k.MemberName] = k.Returns;
                     }
-                    foundReturn = Returnpairs.FirstOrDefault(x => x.Key == item.Name).Value;
-                    //Console.WriteLine(item.Name + " " + foundReturn);
+                    foundReturn = returnPairs.FirstOrDefault(x => x.Key == item.Name).Value;
                 }
             }
+
 
 
             mb.Append(returned);
@@ -249,12 +266,12 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
             if (item.ItemType == MarkdownItemTypes.Method)
                 lookUpType = item.As<MarkdownMethod>().ReturnType;
 
-            dataValues[0] = "<sub>" + Cleaner.CreateFullTypeWithLinks(mdType, lookUpType, false, false) + "</sub>";
+            dataValues[0] = Cleaner.CreateFullTypeWithLinks(mdType, lookUpType, false, false);
 
             string name = item.FullName;
             if (item.ItemType == MarkdownItemTypes.Method)
             {
-                name = Cleaner.CreateFullMethodWithLinks(mdType, item.As<MarkdownMethod>(), false, true);
+                name = Cleaner.CreateFullMethodWithLinks(mdType, item.As<MarkdownMethod>(), false, true, false);
             }
             else if (item.ItemType == MarkdownItemTypes.Property)
             {
@@ -266,44 +283,14 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
             }
 
 
-            dataValues[1] = "<sub>" + name + "</sub>";
+            dataValues[1] = name;
 
             data.Add(dataValues);
-            mb.Table(headers, data, false);
+            mb.Table(headers, data, true);
             mb.AppendLine();
         }
 
-        internal static XmlDocumentComment[] ParseXmlParameterComment(XDocument xDocument, string namespaceMatch)
-        {
-            //Console.WriteLine(xDocument.Descendants("member").Select(x=> x.Attribute("name").Value));//.Foreach(x => Console.WriteLine(x)));
 
-
-            /*var parameterTypes = xDocument.Descendants("member").Select(e => Tuple.Create(e.Attribute("name").Value.Split(')').FirstOrDefault().Substring(e.Attribute("name").Value.IndexOf('(')), e))
-                  .Distinct(new Item1EqualityCompaerer<string, XElement>())
-                  .ToDictionary(e => e.Item1, e => e.Item2);
-
-
-            foreach (var k in parameterTypes)
-            {
-                Console.WriteLine(k.Key);
-
-            }*/
-
-            return xDocument.Descendants("member")
-                .Select(x =>
-                {
-                    var parameters = x.Elements("param")
-                          .Select(e => Tuple.Create(e.Attribute("name").Value, e))
-                          .Distinct(new Item1EqualityCompaerer<string, XElement>())
-                          .ToDictionary(e => e.Item1, e => e.Item2.Value);
-
-                    return new XmlDocumentComment
-                    {
-                        Parameters = parameters,
-                    };
-                }).Where(x => x != null)
-            .ToArray();
-        }
 
     }
 }

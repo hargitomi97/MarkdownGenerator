@@ -14,6 +14,7 @@ namespace igloo15.MarkdownApi.Core.Builders
 
     internal static class MarkdownItemBuilder
     {
+        public static string xmlPath;
         public static MarkdownProject Load(string searchArea, string namespaceMatch)
         {
             List<MarkdownType> types = new List<MarkdownType>();
@@ -175,10 +176,10 @@ namespace igloo15.MarkdownApi.Core.Builders
             return regex.IsMatch(type.Namespace != null ? type.Namespace : string.Empty);
         }
 
-        static ILookup<string, XmlDocumentComment> GetComments(string dllPath, string namespaceMatch)
+       static ILookup<string, XmlDocumentComment> GetComments(string dllPath, string namespaceMatch)
         {
             var dllName = Path.GetFileNameWithoutExtension(dllPath);
-            var xmlPath = Path.Combine(Directory.GetParent(dllPath).FullName, dllName + ".xml");
+            xmlPath = Path.Combine(Directory.GetParent(dllPath).FullName, dllName + ".xml");
 
             XmlDocumentComment[] comments = new XmlDocumentComment[0];
 

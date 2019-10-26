@@ -103,8 +103,6 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
         private void BuildTable(MarkdownBuilder mb, string label, IMarkdownItem[] items, string[] headers, MarkdownType mdType)
         {
-            int counterOfQoute = 0;
-            bool flag = true;
             if (items.Any())
             {
                 mb.Header(2, label);
@@ -134,8 +132,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                         dataValues[0] = Cleaner.CreateFullConstructorsWithLinks(mdType, item.As<MarkdownConstructor>(), false, _options.ShowParameterNames);
                     else
                     {
-                        //dataValues[0] = "<sub>"+Cleaner.CreateFullTypeWithLinks(mdType, lookUpType, false, false)+"</sub>";
-                        //dataValues[0] = "";
+                        dataValues[0] = Cleaner.CreateFullTypeWithLinks(mdType, lookUpType, false, false);
                     }
 
                     string name = item.FullName;
@@ -145,7 +142,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
 
                     if (item.ItemType == MarkdownItemTypes.Method)
                     {
-                        name = Cleaner.CreateFullMethodWithLinks(mdType, item.As<MarkdownMethod>(), false, _options.ShowParameterNames);
+                        name = Cleaner.CreateFullMethodWithLinks(mdType, item.As<MarkdownMethod>(), false, _options.ShowParameterNames, false);
                     }
                     else if(item.ItemType == MarkdownItemTypes.Property)
                     {
@@ -156,26 +153,9 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                         name = Cleaner.CreateFullConstructorsWithLinks(mdType, item.As<MarkdownConstructor>(), false, _options.BuildConstructorPages);
                     }
 
-                   
-                    if (summary.Contains("`"))
-                    {
-                        counterOfQoute++;
-                    }
-                    if(counterOfQoute %2 == 0)
-                    {
-                        if (flag)
-                        {
-                            
-                            flag = false;
-                        }
-                    }
-                    
-                  
-
-                    // Console.WriteLine(counterOfQoute);
                     dataValues[0] = name;
 
-                    //if(headers.Length > 1)
+                    if(headers.Length > 1)
                         dataValues[1] = item.Summary;
 
                     data.Add(dataValues);

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using igloo15.MarkdownApi.Core.Builders;
+﻿using System.Reflection;
 using igloo15.MarkdownApi.Core.Interfaces;
 
 namespace igloo15.MarkdownApi.Core.MarkdownItems.TypeParts

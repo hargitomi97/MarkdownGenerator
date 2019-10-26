@@ -1,3 +1,9 @@
 MarkdownBuilder.cs line 206-215: added extra image to render wide table
-MarkdownItemBuilde.cs:	added myDictionary to store names - links in pair
-VSDocParser.cs: para tags change with new line, paramref changed with e.Groups[2]. Value instead of 1,
+MardownItemBuilder.cs: added global xmlPath
+VSDocParser.cs: para tags change with new line, paramref changed with e.Groups[2]. Value instead of 1, bug: direct links, added ParseXmlParameterComment, ResolveSeeElement
+MarkdownMethod.cs: added Parameters property to get the parameters
+Cleaner: change CreateFullMethodWithLinks
+DefaultMethodBuilder: written all
+DefaultThemeExtension: add void, microsoft support
+DefaultyTypeBuilder: changed to only typeZeroHeaders
+DefaultTheme: addMethodBuilder

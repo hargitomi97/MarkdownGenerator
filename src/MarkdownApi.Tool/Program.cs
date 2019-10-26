@@ -1,20 +1,12 @@
 ﻿using CommandLine;
-using CommandLine.Text;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using igloo15.MarkdownApi.Core;
 using igloo15.MarkdownApi.Core.Themes;
 using Microsoft.Extensions.Logging;
 
 namespace igloo15.MarkdownApi.Tool
 {
-        
+
     static class Program
     {
 

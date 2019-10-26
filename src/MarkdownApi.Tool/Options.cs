@@ -1,9 +1,7 @@
 ﻿using CommandLine;
 using CommandLine.Text;
 using igloo15.MarkdownApi.Core.Themes.Default;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace igloo15.MarkdownApi.Tool
 {

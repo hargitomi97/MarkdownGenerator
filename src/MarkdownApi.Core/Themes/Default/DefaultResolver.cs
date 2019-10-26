@@ -1,7 +1,6 @@
 using igloo15.MarkdownApi.Core.Interfaces;
 using igloo15.MarkdownApi.Core.MarkdownItems;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
-using System;
 using System.IO;
 
 namespace igloo15.MarkdownApi.Core.Themes.Default
@@ -82,9 +81,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                     return null;
                 case MarkdownMethod method:
                     if (_options.BuildMethodPages)
-                    {
                         return $"{method.ParentType.Name}--{method.InternalItem.Name}.md";
-                    }
                     return null;
             }
 

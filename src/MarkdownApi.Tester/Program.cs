@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using igloo15.MarkdownApi.Core;
 using igloo15.MarkdownApi.Core.Themes;
 using igloo15.MarkdownApi.Core.Themes.Default;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 
 namespace igloo15.MarkdownApi.Tester
 {

@@ -1,22 +1,15 @@
-using igloo15.MarkdownApi.Core.Builders;
 using igloo15.MarkdownApi.Core.Interfaces;
 using igloo15.MarkdownApi.Core.MarkdownItems;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 using igloo15.MarkdownApi.Core.Themes.Default;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace igloo15.MarkdownApi.Core.Themes
 {
-  /// <summary>
-  /// This default theme is bundled with the core to provide an example and base theming for documentation generated
-  /// </summary>
-  public class DefaultTheme : ITheme
+    /// <summary>
+    /// This default theme is bundled with the core to provide an example and base theming for documentation generated
+    /// </summary>
+    public class DefaultTheme : ITheme
   {
     private DefaultOptions _options;
 
