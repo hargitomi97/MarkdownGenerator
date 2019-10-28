@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace igloo15.MarkdownApi.Core.Builders
 {
-    /// <summary>
-    /// Builds Markdown strings
-    /// </summary>
-    public class MarkdownBuilder
+  /// <summary>
+  /// Builds Markdown strings
+  /// </summary>
+  public class MarkdownBuilder
     {
 
         /// <summary>

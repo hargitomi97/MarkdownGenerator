@@ -1,13 +1,12 @@
 ﻿using igloo15.MarkdownApi.Core.MarkdownItems;
 using igloo15.MarkdownApi.Core.MarkdownItems.TypeParts;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace igloo15.MarkdownApi.Core.Builders
 {
-    internal class MarkdownTypeBuilder
+  internal class MarkdownTypeBuilder
     {
         public List<MarkdownNamespace> BuildTypes(MarkdownType[] types, ILookup<string, XmlDocumentComment> comments)
         {
