@@ -59,7 +59,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                 mb.Link(name, currentItem.To(constructor));
             else
                 mb.Append(name);
-            mb.Append(" ( ");
+            mb.Append(" (");
             if (parameters.Length > 0)
             {
 
@@ -78,7 +78,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                 }
                 mb.Append(sb.ToString());
             }
-            mb.Append(" )");
+            mb.Append(")");
             return mb.ToString();
         }
 
@@ -103,7 +103,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                     mb.Link(method.Name, currentItem.To(method));
                 else
                     mb.Append(method.Name);
-                mb.Append(" ( ");
+                mb.Append(" (");
             }
             if (parameters.Length > 0)
             {
@@ -154,7 +154,7 @@ namespace igloo15.MarkdownApi.Core.Themes.Default
                 mb.Append(sb.ToString());
             }
             if (!parameterList)
-                mb.Append(" )");
+                mb.Append(")");
             return mb.ToString();
         }
 

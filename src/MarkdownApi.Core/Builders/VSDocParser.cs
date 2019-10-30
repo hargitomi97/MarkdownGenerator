@@ -274,7 +274,7 @@ namespace igloo15.MarkdownApi.Core.Builders
       }
 
       var displayName = $"[{typeName.Split('.').Last()}]";
-      var baseLink = "(https://github.com/hargitomi97/sigstat/blob/master/docs/md/";
+      var baseLink = "(https://github.com/sigstat/sigstat/blob/develop/docs/md/";
       string linkPath;
       if (typeName.StartsWith("F") || typeName.StartsWith("P") || typeName.StartsWith("E"))
       {

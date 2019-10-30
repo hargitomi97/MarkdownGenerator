@@ -203,14 +203,14 @@ namespace igloo15.MarkdownApi.Core.Builders
                 {
                     if (!flag)
                     {
-                        sb.Append(item + "<div><a href=\"#\"><img width=225></a></div>");
+                        sb.Append("<span>"+ item + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
                         sb.Append(" | ");
                         flag = true;
                     }
 
                     else
                     {
-                        sb.Append(item + "<div><a href=\"#\"><img width=525></a></div>");
+                        sb.Append(item);
                         sb.Append(" | ");
                         flag = false;
                     }
@@ -227,7 +227,7 @@ namespace igloo15.MarkdownApi.Core.Builders
             sb.Append("| ");
             foreach (var item in headers)
             {
-                sb.Append("---");
+                sb.Append(":---");
                 sb.Append(" | ");
             }
             sb.AppendLine();
